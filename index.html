@@ -77,45 +77,44 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Initialize Firebase
-        // ⚠️ 蘇蘇注意：如果你要用自己嘅 Firebase，請將下面呢段解除註解 (刪除 /* 同 */)，並填入你嘅資料
-        // 然後可以 Delete 咗下面 try-catch 嗰段
+        // ⚠️ 蘇蘇行動指令：請將你在 Firebase Console 獲得的資料填入下方：
+        // 位置：Firebase Console -> Project Settings -> General -> Your apps -> SDK setup and configuration -> Config
         
-        /*
         const firebaseConfig = {
-            apiKey: "你的_API_KEY_喺度",
-            authDomain: "你的_PROJECT_ID.firebaseapp.com",
-            projectId: "你的_PROJECT_ID",
-            storageBucket: "你的_PROJECT_ID.firebasestorage.app",
-            messagingSenderId: "你的_SENDER_ID",
-            appId: "你的_APP_ID"
+            apiKey: "AIzaSyDZfiar_D0bAhlkZFqc_9RqUIO6XTT7UtQ",
+            authDomain: "fire-team-dashboard.firebaseapp.com",
+            projectId: "fire-team-dashboard",
+            storageBucket: "fire-team-dashboard.firebasestorage.app",
+            messagingSenderId: "270034667438",
+            appId: "1:270034667438:web:cc98aa925e2105fbd4aa3f"
         };
-        */
 
-        // 嘗試自動獲取 Config，如果失敗 (例如你Download咗落黎用)，就會用上面手動填寫嘅
-        let configToUse;
+        // 初始化 Firebase
+        let app, auth, db;
+        let initSuccess = false;
+
         try {
-            if (typeof firebaseConfig !== 'undefined') {
-                configToUse = firebaseConfig;
+            // 檢查是否已填寫 Config (簡單檢查 apiKey 是否包含 '你的_')
+            if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("你的_")) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                initSuccess = true;
+                console.log("Firebase Initialized with Manual Config");
             } else {
-                configToUse = JSON.parse(__firebase_config);
+                console.warn("Firebase Config placeholders detected. Please fill in real data.");
             }
         } catch (e) {
-            console.warn("No auto-config found. Waiting for manual config.");
+            console.error("Firebase Init Failed:", e);
         }
 
-        if (configToUse) {
-            const app = initializeApp(configToUse);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const appId = 'japan-trip-2025-industrial'; // 固定 App ID
 
-            // 將 Firebase 工具掛載到 window，等 React 用到
-            window.firebaseServices = { auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged };
-            console.log("Firebase Initialized Successfully");
-        } else {
-            console.error("Firebase Config Missing");
-            window.firebaseError = true;
-        }
+        // 將 Firebase 工具掛載到 window
+        window.firebaseServices = { 
+            auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
+            isConfigured: initSuccess 
+        };
     </script>
 
     <script type="text/babel">
@@ -315,7 +314,7 @@
             // 0. Wait for Firebase to be ready (Critical Fix for "No Screen")
             useEffect(() => {
                 const checkFirebase = setInterval(() => {
-                    if (window.firebaseServices || window.firebaseError) {
+                    if (window.firebaseServices) {
                         setFirebaseReady(true);
                         clearInterval(checkFirebase);
                     }
@@ -326,8 +325,10 @@
             // 1. Auth & Data Init
             useEffect(() => {
                 if (!firebaseReady || !window.firebaseServices) return;
+                const { auth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, isConfigured } = window.firebaseServices;
 
-                const { auth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = window.firebaseServices;
+                // Stop if config not valid
+                if (!isConfigured) return;
 
                 const initAuth = async () => {
                     try {
@@ -522,21 +523,21 @@
                 );
             }
 
-            if (window.firebaseError) {
+            // 如果 Firebase 未正確配置 (initSuccess = false)
+            if (!window.firebaseServices.isConfigured) {
                 return (
                     <div className="min-h-screen bg-white flex items-center justify-center p-6">
                         <div className="industrial-panel p-8 max-w-lg w-full text-center">
                             <Icon name="AlertTriangle" size={48} className="mx-auto mb-4 text-red-600" />
-                            <h2 className="font-mono text-xl font-bold mb-2 text-red-600">CONFIGURATION_ERROR</h2>
-                            <p className="font-mono text-sm mb-6">Firebase configuration is missing.</p>
+                            <h2 className="font-mono text-xl font-bold mb-2 text-red-600">CONFIGURATION_REQUIRED</h2>
+                            <p className="font-mono text-sm mb-6">Firebase Config Missing.</p>
                             <div className="text-left bg-zinc-100 p-4 border border-zinc-300 font-mono text-xs overflow-x-auto">
-                                <p className="mb-2 font-bold">INSTRUCTIONS:</p>
+                                <p className="mb-2 font-bold">PLEASE EDIT SOURCE CODE:</p>
                                 <ol className="list-decimal pl-4 space-y-1">
                                     <li>Open this HTML file in a text editor.</li>
-                                    <li>Find the <code>&lt;script type="module"&gt;</code> section.</li>
-                                    <li>Uncomment the <code>firebaseConfig</code> object.</li>
-                                    <li>Fill in your API Key and Project details from Firebase Console.</li>
-                                    <li>Save and refresh this page.</li>
+                                    <li>Find <code>const firebaseConfig = ...</code>.</li>
+                                    <li>Fill in your API Key and Project details.</li>
+                                    <li>Save and refresh.</li>
                                 </ol>
                             </div>
                         </div>
