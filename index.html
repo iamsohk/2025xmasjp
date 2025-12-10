@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 冬季日本親子自駕遊 - Cloud Collaboration</title>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+HK:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans HK', sans-serif; 
+            background-color: #ffffff; 
+            color: #18181b; 
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        .industrial-panel { 
+            background: #ffffff;
+            border: 2px solid #18181b;
+            box-shadow: 4px 4px 0px #18181b;
+            border-radius: 0px;
+        }
+
+        .industrial-btn { transition: all 0.1s ease; }
+        .industrial-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+
+        .industrial-input {
+            width: 100%;
+            background: #f4f4f5;
+            border: 2px solid #d4d4d8;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            outline: none;
+            color: #18181b;
+            transition: border-color 0.2s;
+        }
+        .industrial-input:focus { border-color: #18181b; background: #fff; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .modal-overlay { background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(2px); }
+        
+        /* Sync Indicator Animation */
+        @keyframes pulse-green {
+            0%, 100% { background-color: #22c55e; }
+            50% { background-color: #86efac; }
+        }
+        .status-dot { animation: pulse-green 2s infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Initialize Firebase
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        window.firebaseServices = { auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged };
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // --- Icons ---
+        const Icons = {
+            Calendar: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><rect width="18" height="18" x="3" y="4" rx="0" ry="0"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>),
+            MapPin: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>),
+            CheckSquare: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>),
+            Car: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>),
+            Snowflake: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg>),
+            Hotel: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>),
+            Navigation: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>),
+            Sun: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>),
+            Cloud: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M17.5 19c0-1.7-1.3-3-3-3h-11c-1.7 0-3 1.3-3 3s1.3 3 3 3h11c1.7 0 3-1.3 3-3z"/><path d="M17.5 19c2.5 0 4.5-2 4.5-4.5S20 10 17.5 10c-.3 0-.6 0-.8.1C16.1 7.2 13.3 5 10 5 6 5 2.7 8 2.1 11.9"/></svg>),
+            CloudSnow: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M8 15h.01"/><path d="M8 19h.01"/><path d="M12 17h.01"/><path d="M12 21h.01"/><path d="M16 15h.01"/><path d="M16 19h.01"/></svg>),
+            List: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>),
+            ExternalLink: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>),
+            Plus: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M5 12h14"/><path d="M12 5v14"/></svg>),
+            Trash2: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>),
+            RefreshCw: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 0-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>),
+            Edit2: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>),
+            X: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>),
+            Wifi: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>)
+        };
+
+        const Icon = ({ name, size = 20, className }) => {
+            const SpecificIcon = Icons[name];
+            if (!SpecificIcon) return null;
+            return <SpecificIcon size={size} className={className} />;
+        };
+
+        // --- Data ---
+        const defaultTripData = {
+            startDate: "2025-12-20T15:30:00",
+            car: "Toyota Corolla Cross HEV (4WD)",
+            locations: [
+                { id: 'l1', type: "car", name: "取車: Toyota 成田站前店", desc: "JR成田站東口，非機場店", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Station&query_place_id=ChIJZSpeV22LImARMWkKB-JgvP4" },
+                { id: 'l2', type: "shop", name: "Workman Plus 成田美郷台店", desc: "必買雪靴/防風褸 (替代已結業店)", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai&query_place_id=ChIJGYYh7viKImARYJ_1IOXF_Ek" },
+                { id: 'l3', type: "hotel", name: "Day 1: 相鐵 Fresa Inn 鎌倉", desc: "大船站笠間口，步行1分鐘", link: "https://www.google.com/maps/search/?api=1&query=Sotetsu+Fresa+Inn+Kamakura+Ofuna+Kasamaguchi&query_place_id=ChIJSe4p4F1FGGARLTmCb3kiXxM" },
+                { id: 'l4', type: "hotel", name: "Day 2-3: THE TOKI 河口湖", desc: "富士山景，自駕方便", link: "https://www.google.com/maps/search/?api=1&query=THE+TOKI+Fujikawaguchiko&query_place_id=ChIJi-91AD5hGWARYXZndFFyktA" },
+                { id: 'l5', type: "hotel", name: "Day 4-6: ANA Holiday Inn 北輕井澤", desc: "山區路滑，必須雪胎", link: "https://www.google.com/maps/search/?api=1&query=ANA+Holiday+Inn+Resort+Karuizawa&query_place_id=ChIJu_cmDo3bHWARPE8J_-jiTjw" },
+                { id: 'l6', type: "hotel", name: "Day 7-8: 東京灣潮見王子", desc: "近東京站/豐洲，有大浴場", link: "https://www.google.com/maps/search/?api=1&query=Tokyo+Bay+Shiomi+Prince+Hotel&query_place_id=ChIJIw2ZGyyJGGAR3Wa5_nCeBuM" },
+                { id: 'l7', type: "car", name: "還車: Toyota 成田機場店", desc: "成田市取香530-13", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Airport&query_place_id=ChIJrzDaPXzzImARWWX91VYWI1w" }
+            ],
+            itinerary: [
+                { id: 'i1', day: "Day 1", date: "12/20 (六)", title: "落地取車 & 裝備", details: ["15:30 抵達成田 (UO870)", "17:00 JR成田站取車 (Corolla Cross)", "17:30 Workman Plus 買雪靴", "20:00 鎌倉 Check-in"] },
+                { id: 'i2', day: "Day 2", date: "12/21 (日)", title: "鎌倉熱血 -> 富士山", details: ["09:00 鎌倉高校前打卡", "12:00 鶴岡八幡宮午餐", "14:30 開車往河口湖 (2小時)", "17:00 Toki Check-in 浸溫泉"] },
+                { id: 'i3', day: "Day 3", date: "12/22 (一)", title: "富士山慢活", details: ["上午: 大石公園逆富士", "下午: 忍野八海/纜車", "晚餐: 餺飥麵 Houtou"] },
+                { id: 'i4', day: "Day 4", date: "12/23 (二)", title: "北上輕井澤 (雪地)", details: ["10:00 Check-out 長途駕駛", "15:00 白絲瀑布", "16:00 ANA Holiday Inn (小心路滑)"] },
+                { id: 'i5', day: "Day 5", date: "12/24 (三)", title: "平安夜玩雪", details: ["全日: Snow Park 玩雪兜", "晚餐: 酒店自助餐 (需預約)"] },
+                { id: 'i6', day: "Day 6", date: "12/25 (四)", title: "聖誕 Outlet", details: ["上午: 星野 Kera-Ike 溜冰", "下午: 輕井澤 Outlet", "晚上: 小心夜間山路"] },
+                { id: 'i7', day: "Day 7", date: "12/26 (五)", title: "回東京", details: ["10:00 回程東京 (3小時)", "14:00 潮見王子 Check-in", "下午: 東京站/銀座"] },
+                { id: 'i8', day: "Day 8", date: "12/27 (六)", title: "豐洲 & Shibuya Sky", details: ["上午: 豐洲千客萬來", "下午: SHIBUYA SKY (需預約)", "晚餐: 買和牛返房嘆"] },
+                { id: 'i9', day: "Day 9", date: "12/28 (日)", title: "回程還車", details: ["11:00 Check-out", "12:00 酒酒井 Outlet", "15:30 機場店還車", "17:00 機場 Check-in"] }
+            ],
+            defaultTodos: [
+                { id: "t1", text: "Email 確認 Toyota 雪胎 (Studless)", done: false },
+                { id: "t2", text: "確認 Toyota ETC 卡", done: false },
+                { id: "t3", text: "預約 Day 5 平安夜自助餐", done: false },
+                { id: "t4", text: "購買 Day 8 Shibuya Sky 門票", done: false },
+                { id: "t5", text: "購買旅遊保險 (包自駕墊底)", done: false },
+                { id: "t6", text: "Download 離線地圖", done: false },
+                { id: "t7", text: "設定 Visit Japan Web", done: false }
+            ],
+             weatherData: {
+                "成田": { temp: "5°C", condition: "Cloud", icon: "Cloud" },
+                "鎌倉": { temp: "8°C", condition: "Sunny", icon: "Sun" },
+                "河口湖": { temp: "0°C", condition: "Snow", icon: "CloudSnow" },
+                "輕井澤": { temp: "-4°C", condition: "Snow", icon: "CloudSnow" },
+                "東京": { temp: "7°C", condition: "Cloud", icon: "Cloud" }
+            }
+        };
+
+        // --- Components ---
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4">
+                    <div className="bg-white border-4 border-black shadow-[8px_8px_0px_#000] w-full max-w-md p-6 relative animate-slide-up">
+                        <div className="flex justify-between items-center mb-6 border-b-2 border-black pb-2">
+                            <h3 className="font-mono font-bold text-xl uppercase tracking-wider">{title}</h3>
+                            <button onClick={onClose} className="hover:bg-zinc-100 p-1">
+                                <Icon name="X" size={24} className="text-black" />
+                            </button>
+                        </div>
+                        {children}
+                    </div>
+                </div>
+            );
+        };
+
+        const WeatherWidget = ({ weatherData }) => {
+            const [selectedLocation, setSelectedLocation] = useState("河口湖");
+            
+            const handleLocationChange = () => {
+                const locations = Object.keys(weatherData);
+                const currentIndex = locations.indexOf(selectedLocation);
+                const nextIndex = (currentIndex + 1) % locations.length;
+                setSelectedLocation(locations[nextIndex]);
+            };
+
+            const currentWeather = weatherData[selectedLocation];
+
+            return (
+                <div onClick={handleLocationChange} className="industrial-panel p-4 mb-4 flex items-center justify-between cursor-pointer hover:bg-zinc-50 group">
+                   <div className="flex items-center">
+                        <div className="mr-4 text-black">
+                            <Icon name={currentWeather.icon} size={32} />
+                        </div>
+                        <div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-0.5">Weather Monitor</div>
+                            <div className="font-bold font-mono text-lg text-black flex items-center gap-2">
+                                {selectedLocation}
+                                <span className="text-sm font-normal text-zinc-400 group-hover:text-black transition-colors">
+                                    <Icon name="RefreshCw" size={12} />
+                                </span>
+                            </div>
+                        </div>
+                   </div>
+                   <div className="text-right">
+                        <div className="text-2xl font-mono font-bold text-black">{currentWeather.temp}</div>
+                        <div className="text-xs font-mono text-zinc-500">{currentWeather.condition}</div>
+                   </div>
+                </div>
+            );
+        };
+
+        const Countdown = ({ startDate }) => {
+            const [daysLeft, setDaysLeft] = useState(0);
+
+            useEffect(() => {
+                const target = new Date(startDate).getTime();
+                const now = new Date().getTime();
+                const diff = target - now;
+                setDaysLeft(Math.ceil(diff / (1000 * 60 * 60 * 24)));
+            }, [startDate]);
+
+            return (
+                <div className="bg-white border-2 border-black rounded-none p-5 mb-4 shadow-[4px_4px_0px_#000] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-16 h-16 opacity-10 pointer-events-none" 
+                         style={{backgroundImage: "repeating-linear-gradient(45deg, #000, #000 10px, transparent 10px, transparent 20px)"}}></div>
+                    
+                    <div className="flex justify-between items-center relative z-10">
+                        <div>
+                            <p className="text-zinc-500 text-xs font-mono uppercase tracking-widest mb-1">Status: Countdown</p>
+                            <h2 className="text-4xl font-mono font-bold text-black">{daysLeft > 0 ? daysLeft : 0}<span className="text-lg ml-2 text-zinc-500">DAYS</span></h2>
+                        </div>
+                        <div className="text-right">
+                            <div className="flex items-center text-zinc-600 mb-1 justify-end font-mono text-xs">
+                                <Icon name="Car" size={14} className="mr-2 text-black" />
+                                <span>COROLLA CROSS</span>
+                            </div>
+                            <div className="flex items-center text-zinc-600 justify-end font-mono text-xs">
+                                <Icon name="Snowflake" size={14} className="mr-2 text-black" />
+                                <span>SNOW TIRES</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const NavButton = ({ active, label, icon, onClick }) => (
+            <button 
+                onClick={onClick}
+                className={`flex flex-col items-center justify-center w-full py-3 transition-colors industrial-btn 
+                    ${active ? 'text-black bg-white border-t-2 border-black' : 'text-zinc-500 hover:text-black hover:bg-zinc-100'}`}
+            >
+                <Icon name={icon} size={22} className={`mb-1 ${icon === 'Sparkles' && active ? 'text-black' : ''}`} />
+                <span className="text-[10px] font-mono tracking-widest uppercase">{label}</span>
+            </button>
+        );
+
+        // --- App ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            
+            // State
+            const [user, setUser] = useState(null);
+            const [itinerary, setItinerary] = useState([]);
+            const [locations, setLocations] = useState([]);
+            const [todos, setTodos] = useState([]);
+            
+            // UI State
+            const [newTodo, setNewTodo] = useState('');
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            const [modalMode, setModalMode] = useState('add');
+            const [editingItem, setEditingItem] = useState(null);
+            const [modalType, setModalType] = useState('plan');
+            const [planForm, setPlanForm] = useState({ day: '', date: '', title: '', details: '' });
+            const [mapForm, setMapForm] = useState({ type: 'shop', name: '', desc: '', link: '' });
+
+            // Firebase Logic
+            const { auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = window.firebaseServices;
+
+            // 1. Auth
+            useEffect(() => {
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                initAuth();
+                const unsubscribe = onAuthStateChanged(auth, setUser);
+                return () => unsubscribe();
+            }, []);
+
+            // 2. Data Sync
+            useEffect(() => {
+                if (!user) return;
+
+                const unsubItinerary = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'itinerary'), (snapshot) => {
+                    if (snapshot.empty) {
+                        // First run: populate defaults
+                        const batch = writeBatch(db);
+                        defaultTripData.itinerary.forEach(item => {
+                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'itinerary', item.id);
+                            batch.set(ref, item);
+                        });
+                        batch.commit();
+                    } else {
+                        const data = snapshot.docs.map(d => d.data());
+                        // Simple sort by day number extracted from string (Day 1, Day 2...)
+                        data.sort((a, b) => {
+                            const getNum = (str) => parseInt(str.replace(/\D/g, '')) || 0;
+                            return getNum(a.day) - getNum(b.day);
+                        });
+                        setItinerary(data);
+                    }
+                }, (error) => console.error("Itinerary sync error", error));
+
+                const unsubLocations = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'locations'), (snapshot) => {
+                    if (snapshot.empty) {
+                        const batch = writeBatch(db);
+                        defaultTripData.locations.forEach(item => {
+                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'locations', item.id);
+                            batch.set(ref, item);
+                        });
+                        batch.commit();
+                    } else {
+                        setLocations(snapshot.docs.map(d => d.data()));
+                    }
+                }, (error) => console.error("Locations sync error", error));
+
+                const unsubTodos = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'todos'), (snapshot) => {
+                    if (snapshot.empty) {
+                        const batch = writeBatch(db);
+                        defaultTripData.defaultTodos.forEach(item => {
+                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'todos', String(item.id));
+                            batch.set(ref, item);
+                        });
+                        batch.commit();
+                    } else {
+                        const data = snapshot.docs.map(d => d.data());
+                        data.sort((a, b) => a.id - b.id);
+                        setTodos(data);
+                    }
+                }, (error) => console.error("Todos sync error", error));
+
+                return () => {
+                    unsubItinerary();
+                    unsubLocations();
+                    unsubTodos();
+                };
+            }, [user]);
+
+            // Handlers
+            const openPlanModal = (item = null) => {
+                setModalType('plan');
+                if (item) {
+                    setModalMode('edit');
+                    setEditingItem(item);
+                    setPlanForm({ ...item, details: item.details.join('\n') });
+                } else {
+                    setModalMode('add');
+                    setPlanForm({ day: '', date: '', title: '', details: '' });
+                }
+                setIsModalOpen(true);
+            };
+
+            const savePlan = async () => {
+                if (!user) return;
+                const detailsArray = planForm.details.split('\n').filter(line => line.trim() !== '');
+                const id = modalMode === 'edit' ? editingItem.id : Date.now().toString();
+                const newItem = { ...planForm, details: detailsArray, id };
+                
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'itinerary', id), newItem);
+                setIsModalOpen(false);
+            };
+
+            const deletePlan = async (id) => {
+                if (!user) return;
+                if(confirm("DELETE PLAN: CONFIRM?")) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'itinerary', id));
+                }
+            };
+
+            const openMapModal = (item = null) => {
+                setModalType('map');
+                if (item) {
+                    setModalMode('edit');
+                    setEditingItem(item);
+                    setMapForm(item);
+                } else {
+                    setModalMode('add');
+                    setMapForm({ type: 'shop', name: '', desc: '', link: '' });
+                }
+                setIsModalOpen(true);
+            };
+
+            const saveMap = async () => {
+                if (!user) return;
+                const id = modalMode === 'edit' ? editingItem.id : Date.now().toString();
+                const newItem = { ...mapForm, id };
+                
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'locations', id), newItem);
+                setIsModalOpen(false);
+            };
+
+            const deleteMap = async (id) => {
+                if (!user) return;
+                if(confirm("DELETE LOCATION: CONFIRM?")) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'locations', id));
+                }
+            };
+
+            const toggleTodo = async (id) => {
+                if (!user) return;
+                const todo = todos.find(t => t.id === id);
+                if (todo) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'todos', String(id)), { ...todo, done: !todo.done });
+                }
+            };
+
+            const addTodo = async () => {
+                if (!user || !newTodo.trim()) return;
+                const id = Date.now();
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'todos', String(id)), { id, text: newTodo.trim(), done: false });
+                setNewTodo('');
+            };
+
+            const deleteTodo = async (id) => {
+                if (!user) return;
+                if(confirm("DELETE TASK: CONFIRM?")) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'todos', String(id)));
+                }
+            };
+
+            const resetTodos = async () => {
+                if (!user) return;
+                if(confirm("RESET ALL TO DEFAULTS? This will delete all current tasks for everyone.")) {
+                    // This is a heavy operation, effectively deleting all and restoring defaults
+                    // For simplicity in this demo, we can just delete current ones and let the 'empty' check restore defaults, 
+                    // OR specifically overwrite. Let's try overwrite.
+                    
+                    // 1. Delete all current
+                    const batchDelete = writeBatch(db);
+                    todos.forEach(t => {
+                        batchDelete.delete(doc(db, 'artifacts', appId, 'public', 'data', 'todos', String(t.id)));
+                    });
+                    await batchDelete.commit();
+                    
+                    // The useEffect logic will detect empty and auto-restore defaults instantly.
+                }
+            };
+
+            const renderContent = () => {
+                switch(activeTab) {
+                    case 'dashboard':
+                        return (
+                            <div className="space-y-4 animate-slide-up">
+                                <Countdown startDate={defaultTripData.startDate} />
+                                <WeatherWidget weatherData={defaultTripData.weatherData} />
+                                
+                                <div className="industrial-panel p-5">
+                                    <div className="flex items-center justify-between mb-4 border-b-2 border-zinc-100 pb-2">
+                                        <h3 className="font-mono font-bold text-lg flex items-center text-black tracking-wider">
+                                            <Icon name="Calendar" className="mr-2 text-black" /> 
+                                            MISSION_LOG
+                                        </h3>
+                                        <span className="text-xs font-mono text-zinc-500">NEXT 3</span>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {itinerary.slice(0, 3).map((item) => (
+                                            <div key={item.id} className="flex items-center">
+                                                <div className="w-16 text-xs font-mono text-zinc-500 pt-1">{item.date.split(' ')[0]}</div>
+                                                <div className="flex-1 bg-zinc-50 p-2 border-l-4 border-black">
+                                                    <div className="font-bold text-sm text-black">{item.title}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button onClick={() => setActiveTab('itinerary')} className="w-full text-center text-xs font-mono text-zinc-600 mt-2 py-2 hover:text-black hover:underline uppercase">
+                                            > View Full Schedule
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="industrial-panel p-5">
+                                    <div className="flex items-center justify-between mb-3 border-b-2 border-zinc-100 pb-2">
+                                        <h3 className="font-mono font-bold text-lg flex items-center text-black tracking-wider">
+                                            <Icon name="List" className="mr-2 text-black" /> 
+                                            STATUS_CHECK
+                                        </h3>
+                                        <span className="text-xs font-mono bg-zinc-100 text-black border border-zinc-300 px-2 py-0.5">
+                                            {todos.filter(t => t.done).length} / {todos.length}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {todos.slice(0, 3).map(t => (
+                                            <div key={t.id} className="flex items-center space-x-3 text-sm text-zinc-600">
+                                                <div className={`w-4 h-4 border-2 flex items-center justify-center rounded-none ${t.done ? 'bg-black border-black' : 'border-zinc-400 bg-white'}`}>
+                                                    {t.done && <Icon name="CheckSquare" size={12} className="text-white" />}
+                                                </div>
+                                                <span className={t.done ? "line-through text-zinc-400" : ""}>{t.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+
+                    case 'itinerary':
+                        return (
+                            <div className="space-y-4 pb-20 animate-slide-up">
+                                <div className="flex justify-between items-center mb-4 px-1">
+                                    <h2 className="text-xl font-mono font-bold text-black border-l-4 border-black pl-3">FULL_SCHEDULE</h2>
+                                    <button onClick={() => openPlanModal()} className="bg-black text-white px-3 py-1 text-xs font-mono flex items-center gap-1 hover:bg-zinc-800">
+                                        <Icon name="Plus" size={14} /> ADD_PLAN
+                                    </button>
+                                </div>
+                                {itinerary.map((day) => (
+                                    <div key={day.id} className="industrial-panel p-4 relative group">
+                                        <div className="absolute top-0 right-0 flex">
+                                            <button onClick={() => openPlanModal(day)} className="bg-zinc-100 p-2 hover:bg-zinc-200 border-l-2 border-b-2 border-black">
+                                                <Icon name="Edit2" size={14} className="text-black" />
+                                            </button>
+                                            <button onClick={() => deletePlan(day.id)} className="bg-zinc-100 p-2 hover:bg-red-50 hover:text-red-600 border-l-2 border-b-2 border-black">
+                                                <Icon name="Trash2" size={14} />
+                                            </button>
+                                        </div>
+                                        <div className="absolute top-0 right-0 bg-black text-white text-[10px] px-2 py-1 font-mono mr-16 border-b-2 border-l-2 border-black">{day.date}</div>
+                                        
+                                        <div className="mb-2 mt-2">
+                                            <h3 className="font-mono font-bold text-lg text-black underline decoration-4 decoration-yellow-400">{day.day}</h3>
+                                        </div>
+                                        <div className="text-black font-bold mb-3 border-b-2 border-zinc-100 pb-2">{day.title}</div>
+                                        <ul className="space-y-2">
+                                            {day.details.map((detail, dIdx) => (
+                                                <li key={dIdx} className="text-sm text-zinc-600 flex items-start font-mono">
+                                                    <span className="text-black mr-2 font-bold">></span>
+                                                    {detail}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+
+                    case 'map':
+                        return (
+                            <div className="space-y-4 pb-20 animate-slide-up">
+                                <div className="flex justify-between items-center mb-4 px-1">
+                                    <h2 className="text-xl font-mono font-bold text-black border-l-4 border-black pl-3">WAYPOINTS</h2>
+                                    <button onClick={() => openMapModal()} className="bg-black text-white px-3 py-1 text-xs font-mono flex items-center gap-1 hover:bg-zinc-800">
+                                        <Icon name="Plus" size={14} /> ADD_LOC
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    {locations.map((loc) => (
+                                        <div key={loc.id} className="industrial-panel p-4 relative group hover:bg-zinc-50 transition-colors">
+                                            <div className="absolute top-2 right-2 flex opacity-0 group-hover:opacity-100 transition-opacity">
+                                                 <button onClick={() => openMapModal(loc)} className="p-1 hover:text-blue-600 mr-2">
+                                                    <Icon name="Edit2" size={16} />
+                                                </button>
+                                                <button onClick={() => deleteMap(loc.id)} className="p-1 hover:text-red-600">
+                                                    <Icon name="Trash2" size={16} />
+                                                </button>
+                                            </div>
+                                            <a 
+                                                href={loc.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-between"
+                                            >
+                                                <div className="flex items-center space-x-4">
+                                                    <div className={`p-2 border-2 ${
+                                                        loc.type === 'car' ? 'border-black text-black bg-zinc-100' : 
+                                                        loc.type === 'shop' ? 'border-black text-black bg-zinc-100' : 
+                                                        'border-black text-black bg-zinc-100'
+                                                    }`}>
+                                                        {loc.type === 'car' && <Icon name="Car" size={18} />}
+                                                        {loc.type === 'shop' && <Icon name="Navigation" size={18} />}
+                                                        {loc.type === 'hotel' && <Icon name="Hotel" size={18} />}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-sm text-black group-hover:underline transition-colors font-mono">{loc.name}</div>
+                                                        <div className="text-xs text-zinc-500 mt-0.5">{loc.desc}</div>
+                                                    </div>
+                                                </div>
+                                                <Icon name="ExternalLink" size={16} className="text-zinc-400 group-hover:text-black mr-12" />
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+
+                    case 'todo':
+                        return (
+                            <div className="space-y-4 pb-20 animate-slide-up">
+                                <div className="flex justify-between items-center mb-4 px-1">
+                                    <h2 className="text-xl font-mono font-bold text-black border-l-4 border-black pl-3">CHECKLIST</h2>
+                                    <button onClick={resetTodos} className="text-[10px] font-mono text-red-600 hover:text-red-800 border border-red-200 px-2 py-1 bg-red-50">RESET_DEFAULTS</button>
+                                </div>
+                                <div className="flex gap-0 mb-4 industrial-panel p-1">
+                                    <input 
+                                        type="text" 
+                                        value={newTodo} 
+                                        onChange={(e) => setNewTodo(e.target.value)}
+                                        placeholder="NEW_TASK..."
+                                        className="flex-1 bg-transparent text-black px-3 py-2 text-sm font-mono focus:outline-none"
+                                        onKeyPress={(e) => e.key === 'Enter' && addTodo()}
+                                    />
+                                    <button onClick={addTodo} disabled={!newTodo.trim()} className="bg-black text-white px-4 hover:bg-zinc-800 transition-all disabled:opacity-50 rounded-none"><Icon name="Plus" size={18} /></button>
+                                </div>
+                                <div className="industrial-panel overflow-hidden">
+                                    {todos.map((todo) => (
+                                        <div key={todo.id} onClick={() => toggleTodo(todo.id)} className={`p-4 border-b-2 border-zinc-100 flex items-center cursor-pointer hover:bg-zinc-50 group ${todo.done ? 'bg-zinc-50' : ''}`}>
+                                            <div className={`w-5 h-5 border-2 mr-4 flex items-center justify-center flex-shrink-0 rounded-none ${todo.done ? 'bg-black border-black' : 'border-zinc-400 bg-white'}`}>
+                                                {todo.done && <Icon name="CheckSquare" size={14} className="text-white" />}
+                                            </div>
+                                            <span className={`flex-1 font-mono text-sm ${todo.done ? 'text-zinc-400 line-through' : 'text-black'}`}>{todo.text}</span>
+                                            <button onClick={(e) => { e.stopPropagation(); deleteTodo(todo.id); }} className="p-2 text-zinc-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"><Icon name="Trash2" size={16} /></button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    default: return null;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-white text-black pb-20 max-w-md mx-auto relative shadow-[0_0_50px_rgba(0,0,0,0.1)] border-x border-zinc-200 overflow-hidden font-sans">
+                    <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b-2 border-black px-6 py-4 flex justify-between items-center shadow-sm">
+                        <div>
+                            <h1 className="text-lg font-mono font-bold text-black tracking-tighter">JAPAN_TRIP_<span className="text-zinc-500">2025</span></h1>
+                            <div className="h-1 w-full bg-black mt-1"></div>
+                        </div>
+                        <div className="flex items-center space-x-2 border-2 border-black bg-white px-2 py-1">
+                            <span className={`w-2 h-2 rounded-full ${user ? 'status-dot' : 'bg-red-500'}`}></span>
+                            <span className="text-[10px] font-mono text-black tracking-wider">{user ? 'CLOUD_SYNC' : 'OFFLINE'}</span>
+                        </div>
+                    </div>
+                    
+                    <div className="p-5">{renderContent()}</div>
+                    
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black max-w-md mx-auto z-50">
+                        <div className="flex justify-around items-center px-0">
+                            <NavButton active={activeTab === 'dashboard'} label="HOME" icon="Sun" onClick={() => setActiveTab('dashboard')} />
+                            <NavButton active={activeTab === 'itinerary'} label="PLAN" icon="Calendar" onClick={() => setActiveTab('itinerary')} />
+                            <NavButton active={activeTab === 'map'} label="MAPS" icon="MapPin" onClick={() => setActiveTab('map')} />
+                            <NavButton active={activeTab === 'todo'} label="TASKS" icon="CheckSquare" onClick={() => setActiveTab('todo')} />
+                        </div>
+                    </div>
+
+                    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={modalMode === 'add' ? (modalType === 'plan' ? 'ADD_PLAN' : 'ADD_LOCATION') : (modalType === 'plan' ? 'EDIT_PLAN' : 'EDIT_LOCATION')}>
+                        {modalType === 'plan' ? (
+                            <div className="space-y-4">
+                                <div><label className="block text-xs font-mono font-bold mb-1">DAY</label><input type="text" className="industrial-input" value={planForm.day} onChange={(e) => setPlanForm({...planForm, day: e.target.value})} placeholder="e.g. Day 1" /></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">DATE</label><input type="text" className="industrial-input" value={planForm.date} onChange={(e) => setPlanForm({...planForm, date: e.target.value})} placeholder="e.g. 12/20 (Sat)" /></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">TITLE</label><input type="text" className="industrial-input" value={planForm.title} onChange={(e) => setPlanForm({...planForm, title: e.target.value})} placeholder="Main Activity" /></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">DETAILS (One per line)</label><textarea className="industrial-input h-24" value={planForm.details} onChange={(e) => setPlanForm({...planForm, details: e.target.value})} placeholder="- Detail 1&#10;- Detail 2"></textarea></div>
+                                <button onClick={savePlan} className="w-full bg-black text-white py-3 font-mono font-bold text-sm hover:bg-zinc-800 transition-colors">SAVE_DATA</button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div><label className="block text-xs font-mono font-bold mb-1">TYPE</label><select className="industrial-input" value={mapForm.type} onChange={(e) => setMapForm({...mapForm, type: e.target.value})}><option value="shop">SHOP/SIGHT</option><option value="hotel">HOTEL</option><option value="car">CAR</option></select></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">NAME</label><input type="text" className="industrial-input" value={mapForm.name} onChange={(e) => setMapForm({...mapForm, name: e.target.value})} placeholder="Location Name" /></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">DESC</label><input type="text" className="industrial-input" value={mapForm.desc} onChange={(e) => setMapForm({...mapForm, desc: e.target.value})} placeholder="Short Description" /></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">LINK (Google Maps)</label><input type="text" className="industrial-input" value={mapForm.link} onChange={(e) => setMapForm({...mapForm, link: e.target.value})} placeholder="https://..." /></div>
+                                <button onClick={saveMap} className="w-full bg-black text-white py-3 font-mono font-bold text-sm hover:bg-zinc-800 transition-colors">SAVE_DATA</button>
+                            </div>
+                        )}
+                    </Modal>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
