@@ -77,7 +77,22 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Initialize Firebase
+        // ⚠️ 蘇蘇注意：如果你要用自己嘅 Firebase，請將下面呢段解除註解 (刪除 /* 同 */)，並填入你嘅資料
+        // 然後 Delete 咗 `const firebaseConfig = JSON.parse(__firebase_config);` 呢一行
+        /*
+        const firebaseConfig = {
+           apiKey: "AIzaSyDZfiar_D0bAhlkZFqc_9RqUIO6XTT7UtQ",
+            authDomain: "fire-team-dashboard.firebaseapp.com",
+            projectId: "fire-team-dashboard",
+            storageBucket: "fire-team-dashboard.firebasestorage.app",
+            messagingSenderId: "270034667438",
+            appId: "1:270034667438:web:cc98aa925e2105fbd4aa3f"
+        };
+        */
+
+        // 目前環境使用自動設定 (如果你自己 Host，請刪除下面呢行，用上面個 Config)
         const firebaseConfig = JSON.parse(__firebase_config);
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
