@@ -1,17 +1,24 @@
+這是一個完整的、已更新的 HTML 文件。我已經將你提供的所有最新行程、駕駛提示、休息站 Google Map Links、以及詳細的「待辦/購物清單」全部整合進了 `defaultTripData` 中。
+
+你可以直接儲存此檔案（例如存為 `index.html`），然後在瀏覽器中打開。
+
+**更新重點：**
+
+1. **行程表 (Itinerary)：** 已經更新為 v4 最終執行版，包含所有駕駛時間點（14:00/16:00/16:30 起程提示）及休息站連結。
+2. **待辦事項 (Checklist)：** 已經將你的「證件」、「裝備」、「個人護理」及「購物清單 (Watch List)」全部輸入，並加了分類標籤（如 `[購物]`、`[出門]`）。
+3. **地點 (Waypoints)：** 加入了所有休息站 (PA/SA) 的地標及連結。
+
+```html
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 冬季日本親子自駕遊 - Cloud Collaboration</title>
-    <!-- React & ReactDOM -->
+    <title>2025 冬季日本親子自駕遊 (最終版) - Cloud Collaboration</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+HK:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -94,7 +101,6 @@
         let initSuccess = false;
 
         try {
-            // 檢查是否已填寫 Config (簡單檢查 apiKey 是否包含 '你的_')
             if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("你的_")) {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -150,37 +156,57 @@
         };
 
         // --- Data ---
+        // ⚠️ 蘇蘇行動指令：已根據你提供的最終行程表 (v4) 及購物/待辦清單更新資料庫
         const defaultTripData = {
-            startDate: "2025-12-20T15:30:00",
-            car: "Toyota Corolla Cross HEV (4WD)",
+            startDate: "2025-12-20T15:55:00",
+            car: "Toyota Corolla Cross (雪軚)",
             locations: [
-                { id: 'l1', type: "car", name: "取車: Toyota 成田站前店", desc: "JR成田站東口，非機場店", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Station&query_place_id=ChIJZSpeV22LImARMWkKB-JgvP4" },
-                { id: 'l2', type: "shop", name: "Workman Plus 成田美郷台店", desc: "必買雪靴/防風褸 (替代已結業店)", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai&query_place_id=ChIJGYYh7viKImARYJ_1IOXF_Ek" },
-                { id: 'l3', type: "hotel", name: "Day 1: 相鐵 Fresa Inn 鎌倉", desc: "大船站笠間口，步行1分鐘", link: "https://www.google.com/maps/search/?api=1&query=Sotetsu+Fresa+Inn+Kamakura+Ofuna+Kasamaguchi&query_place_id=ChIJSe4p4F1FGGARLTmCb3kiXxM" },
-                { id: 'l4', type: "hotel", name: "Day 2-3: THE TOKI 河口湖", desc: "富士山景，自駕方便", link: "https://www.google.com/maps/search/?api=1&query=THE+TOKI+Fujikawaguchiko&query_place_id=ChIJi-91AD5hGWARYXZndFFyktA" },
-                { id: 'l5', type: "hotel", name: "Day 4-6: ANA Holiday Inn 北輕井澤", desc: "山區路滑，必須雪胎", link: "https://www.google.com/maps/search/?api=1&query=ANA+Holiday+Inn+Resort+Karuizawa&query_place_id=ChIJu_cmDo3bHWARPE8J_-jiTjw" },
-                { id: 'l6', type: "hotel", name: "Day 7-8: 東京灣潮見王子", desc: "近東京站/豐洲，有大浴場", link: "https://www.google.com/maps/search/?api=1&query=Tokyo+Bay+Shiomi+Prince+Hotel&query_place_id=ChIJIw2ZGyyJGGAR3Wa5_nCeBuM" },
-                { id: 'l7', type: "car", name: "還車: Toyota 成田機場店", desc: "成田市取香530-13", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Airport&query_place_id=ChIJrzDaPXzzImARWWX91VYWI1w" }
+                { id: 'l1', type: "car", name: "取車: JR 成田站店", desc: "17:00 取車", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Station&query_place_id=ChIJZSpeV22LImARMWkKB-JgvP4" },
+                { id: 'l2', type: "shop", name: "Workman Plus 成田", desc: "17:30 買雪靴", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai&query_place_id=ChIJGYYh7viKImARYJ_1IOXF_Ek" },
+                { id: 'l3', type: "shop", name: "UNIQLO 鎌倉店", desc: "Day 2 必去：黑色樽領衫", link: "" },
+                { id: 'l4', type: "shop", name: "灌籃高手平交道", desc: "Day 2 途經 (嚴禁停車)", link: "https://www.google.com/maps/search/?api=1&query=Atsugi+PA+Soto-mawari" },
+                { id: 'l5', type: "shop", name: "厚木 PA (Atsugi)", desc: "Day 2 休息站 (40min後)", link: "https://www.google.com/url?sa=E&source=gmail&q=https://www.google.com/maps/search/?api=1%26query=Atsugi+PA" },
+                { id: 'l6', type: "shop", name: "足柄 SA (Ashigara)", desc: "Day 2 休息站 (80min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DAshigara%2BSA" },
+                { id: 'l7', type: "shop", name: "7-11 笛吹御坂店", desc: "Day 4 休息站 (40min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3D7-Eleven%2BFuefuki%2BMisaka" },
+                { id: 'l8', type: "shop", name: "道の駅 南清里", desc: "Day 4 休息站 (90min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DMichinoeki%2BMinami%2BKiyosato" },
+                { id: 'l9', type: "shop", name: "7-11 野邊山店", desc: "Day 4 休息站 (130min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3D7-Eleven%2BNobeyama" },
+                { id: 'l10', type: "shop", name: "上里 SA (Kamisato)", desc: "Day 7 休息站 (40min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DKamisato%2BSA" },
+                { id: 'l11', type: "shop", name: "高坂 SA (Takasaka)", desc: "Day 7 休息站 (80min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DTakasaka%2BSA" }
             ],
             itinerary: [
-                { id: 'i1', day: "Day 1", date: "12/20 (六)", title: "落地取車 & 裝備", details: ["15:30 抵達成田 (UO870)", "17:00 JR成田站取車 (Corolla Cross)", "17:30 Workman Plus 買雪靴", "20:00 鎌倉 Check-in"] },
-                { id: 'i2', day: "Day 2", date: "12/21 (日)", title: "鎌倉熱血 -> 富士山", details: ["09:00 鎌倉高校前打卡", "12:00 鶴岡八幡宮午餐", "14:30 開車往河口湖 (2小時)", "17:00 Toki Check-in 浸溫泉"] },
-                { id: 'i3', day: "Day 3", date: "12/22 (一)", title: "富士山慢活", details: ["上午: 大石公園逆富士", "下午: 忍野八海/纜車", "晚餐: 餺飥麵 Houtou"] },
-                { id: 'i4', day: "Day 4", date: "12/23 (二)", title: "北上輕井澤 (雪地)", details: ["10:00 Check-out 長途駕駛", "15:00 白絲瀑布", "16:00 ANA Holiday Inn (小心路滑)"] },
-                { id: 'i5', day: "Day 5", date: "12/24 (三)", title: "平安夜玩雪", details: ["全日: Snow Park 玩雪兜", "晚餐: 酒店自助餐 (需預約)"] },
-                { id: 'i6', day: "Day 6", date: "12/25 (四)", title: "聖誕 Outlet", details: ["上午: 星野 Kera-Ike 溜冰", "下午: 輕井澤 Outlet", "晚上: 小心夜間山路"] },
-                { id: 'i7', day: "Day 7", date: "12/26 (五)", title: "回東京", details: ["10:00 回程東京 (3小時)", "14:00 潮見王子 Check-in", "下午: 東京站/銀座"] },
-                { id: 'i8', day: "Day 8", date: "12/27 (六)", title: "豐洲 & Shibuya Sky", details: ["上午: 豐洲千客萬來", "下午: SHIBUYA SKY (需預約)", "晚餐: 買和牛返房嘆"] },
-                { id: 'i9', day: "Day 9", date: "12/28 (日)", title: "回程還車", details: ["11:00 Check-out", "12:00 酒酒井 Outlet", "15:30 機場店還車", "17:00 機場 Check-in"] }
+                { id: 'i1', day: "Day 1", date: "12/20 (五)", title: "成田 → 鎌倉", details: ["15:55 抵達成田", "17:00 JR成田站取車", "17:30 Workman Plus 買雪靴", "20:30 鎌倉 Check-in", "👉 晚上休息，不再加行程"] },
+                { id: 'i2', day: "Day 2", date: "12/21 (六)", title: "鎌倉 → 江之島 → 河口湖", details: ["上午: 鎌倉 (UNIQLO買樽領衫)", "途經: 灌籃高手平交道 (拍片經過，勿停車)", "中午: 江之島海邊散步", "⚠️ 16:00 必須離開江之島 (避黑夜山路)", "休息: 厚木PA, 足柄SA", "晚上: 宿河口湖"] },
+                { id: 'i3', day: "Day 3", date: "12/22 (日)", title: "河口湖 (景點日)", details: ["天上山公園纜車", "河口湖遊船", "大石公園", "音樂盒之森", "Lake Bake 麵包工房", "晚餐: 山麓園/Sylvans"] },
+                { id: 'i4', day: "Day 4", date: "12/23 (一)", title: "河口湖 → 輕井澤 (長途)", details: ["早起: 逆富士 / 新倉山淺間神社", "CISCO Coffee", "⚠️ 14:00 必須啟程 (山路結冰)", "休息: 7-11笛吹, 南清里, 7-11野邊山", "晚上: 宿輕井澤"] },
+                { id: 'i5', day: "Day 5", date: "12/24 (二)", title: "平安夜滑雪", details: ["全日: 滑雪場", "重點: 專注滑雪，不加行程", "晚上: 宿輕井澤"] },
+                { id: 'i6', day: "Day 6", date: "12/25 (三)", title: "輕井澤自駕遊", details: ["雲場池 / 舊輕井澤銀座通", "聖保羅教堂 / 白絲瀑布", "榆樹街小鎮 / 石之教會", "星野溫泉「蜻蜓之湯」"] },
+                { id: 'i7', day: "Day 7", date: "12/26 (四)", title: "輕井澤 → 東京", details: ["上午: 王子飯店滑雪場", "下午: 輕井澤 Outlet", "⚠️ 16:30 離開 Outlet (避塞車)", "休息: 上里SA, 高坂SA", "晚上: 宿東京"] },
+                { id: 'i8', day: "Day 8", date: "12/27 (五)", title: "東京", details: ["六本木燈飾", "哈利波特", "Chikawa 麵包店", "晚上: 宿東京"] },
+                { id: 'i9', day: "Day 9", date: "12/28 (六)", title: "早機回程", details: ["04:55 起飛返香港", "(需於 27/12 晚或半夜前往機場)"] }
             ],
             defaultTodos: [
-                { id: "t1", text: "Email 確認 Toyota 雪胎 (Studless)", done: false },
-                { id: "t2", text: "確認 Toyota ETC 卡", done: false },
-                { id: "t3", text: "預約 Day 5 平安夜自助餐", done: false },
-                { id: "t4", text: "購買 Day 8 Shibuya Sky 門票", done: false },
-                { id: "t5", text: "購買旅遊保險 (包自駕墊底)", done: false },
-                { id: "t6", text: "Download 離線地圖", done: false },
-                { id: "t7", text: "設定 Visit Japan Web", done: false }
+                { id: "t1", text: "[文件] 下載 Visit Japan Web (填好+Cap圖)", done: false },
+                { id: "t2", text: "[文件] 國際車牌 (Check有效期+帶正本)", done: false },
+                { id: "t3", text: "[文件] 旅遊保險單 (Copy存手機)", done: false },
+                { id: "t4", text: "[文件] ETC卡確認 (租車公司)", done: false },
+                { id: "t5", text: "[財務] 唱日圓現金 (散紙過Toll)", done: false },
+                { id: "t6", text: "[出門] 護照/ID/電話/SIM/尿袋", done: false },
+                { id: "t7", text: "[出門] 設定小米Cam", done: false },
+                { id: "t8", text: "[出門] 帶相機 + 電 + SD卡", done: false },
+                { id: "t9", text: "[裝備] 太陽眼鏡 (雪地反光)", done: false },
+                { id: "t10", text: "[裝備] 防水手套 & 厚長襪", done: false },
+                { id: "t11", text: "[裝備] 暖包 (貼身/手握)", done: false },
+                { id: "t12", text: "[裝備] 轉插 (兩腳扁插)", done: false },
+                { id: "t13", text: "[裝備] 車用手機架 & 車充", done: false },
+                { id: "t14", text: "[護理] 超強保濕Cream/Lotion", done: false },
+                { id: "t15", text: "[護理] 防曬乳 (雪地紫外線)", done: false },
+                { id: "t16", text: "[護理] 平安藥 (必理痛/腸胃/膠布)", done: false },
+                { id: "t17", text: "[購物] 黑色樽領衫", done: false },
+                { id: "t18", text: "[購物] Jordan 波鞋 (薄底)", done: false },
+                { id: "t19", text: "[購物] 無印: 格格碟/有線耳筒/收縮袋/保暖衣", done: false },
+                { id: "t20", text: "[購物] Workman 雪靴", done: false },
+                { id: "t21", text: "[購物] Curel 泡洗顔料 150ml", done: false },
+                { id: "t22", text: "[購物] MINON 洗面乳 100g", done: false }
             ],
              weatherData: {
                 "成田": { temp: "5°C", condition: "Cloud", icon: "Cloud" },
@@ -753,7 +779,8 @@
                                 <div><label className="block text-xs font-mono font-bold mb-1">DAY</label><input type="text" className="industrial-input" value={planForm.day} onChange={(e) => setPlanForm({...planForm, day: e.target.value})} placeholder="e.g. Day 1" /></div>
                                 <div><label className="block text-xs font-mono font-bold mb-1">DATE</label><input type="text" className="industrial-input" value={planForm.date} onChange={(e) => setPlanForm({...planForm, date: e.target.value})} placeholder="e.g. 12/20 (Sat)" /></div>
                                 <div><label className="block text-xs font-mono font-bold mb-1">TITLE</label><input type="text" className="industrial-input" value={planForm.title} onChange={(e) => setPlanForm({...planForm, title: e.target.value})} placeholder="Main Activity" /></div>
-                                <div><label className="block text-xs font-mono font-bold mb-1">DETAILS (One per line)</label><textarea className="industrial-input h-24" value={planForm.details} onChange={(e) => setPlanForm({...planForm, details: e.target.value})} placeholder="- Detail 1&#10;- Detail 2"></textarea></div>
+                                <div><label className="block text-xs font-mono font-bold mb-1">DETAILS (One per line)</label><textarea className="industrial-input h-24" value={planForm.details} onChange={(e) => setPlanForm({...planForm, details: e.target.value})} placeholder="- Detail 1
+- Detail 2"></textarea></div>
                                 <button onClick={savePlan} className="w-full bg-black text-white py-3 font-mono font-bold text-sm hover:bg-zinc-800 transition-colors">SAVE_DATA</button>
                             </div>
                         ) : (
@@ -775,3 +802,5 @@
     </script>
 </body>
 </html>
+
+```
