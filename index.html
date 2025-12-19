@@ -1,20 +1,9 @@
-這是一個完整的、已更新的 HTML 文件。我已經將你提供的所有最新行程、駕駛提示、休息站 Google Map Links、以及詳細的「待辦/購物清單」全部整合進了 `defaultTripData` 中。
-
-你可以直接儲存此檔案（例如存為 `index.html`），然後在瀏覽器中打開。
-
-**更新重點：**
-
-1. **行程表 (Itinerary)：** 已經更新為 v4 最終執行版，包含所有駕駛時間點（14:00/16:00/16:30 起程提示）及休息站連結。
-2. **待辦事項 (Checklist)：** 已經將你的「證件」、「裝備」、「個人護理」及「購物清單 (Watch List)」全部輸入，並加了分類標籤（如 `[購物]`、`[出門]`）。
-3. **地點 (Waypoints)：** 加入了所有休息站 (PA/SA) 的地標及連結。
-
-```html
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 冬季日本親子自駕遊 (最終版) - Cloud Collaboration</title>
+    <title>2025 日本自駕親子遊 (完整地圖版) - Cloud Collaboration</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -84,9 +73,6 @@
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Initialize Firebase
-        // ⚠️ 蘇蘇行動指令：請將你在 Firebase Console 獲得的資料填入下方：
-        // 位置：Firebase Console -> Project Settings -> General -> Your apps -> SDK setup and configuration -> Config
-        
         const firebaseConfig = {
             apiKey: "AIzaSyDZfiar_D0bAhlkZFqc_9RqUIO6XTT7UtQ",
             authDomain: "fire-team-dashboard.firebaseapp.com",
@@ -114,9 +100,8 @@
             console.error("Firebase Init Failed:", e);
         }
 
-        const appId = 'japan-trip-2025-industrial'; // 固定 App ID
+        const appId = 'japan-trip-2025-industrial'; 
 
-        // 將 Firebase 工具掛載到 window
         window.firebaseServices = { 
             auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
             isConfigured: initSuccess 
@@ -156,25 +141,51 @@
         };
 
         // --- Data ---
-        // ⚠️ 蘇蘇行動指令：已根據你提供的最終行程表 (v4) 及購物/待辦清單更新資料庫
         const defaultTripData = {
             startDate: "2025-12-20T15:55:00",
             car: "Toyota Corolla Cross (雪軚)",
             locations: [
-                { id: 'l1', type: "car", name: "取車: JR 成田站店", desc: "17:00 取車", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Station&query_place_id=ChIJZSpeV22LImARMWkKB-JgvP4" },
-                { id: 'l2', type: "shop", name: "Workman Plus 成田", desc: "17:30 買雪靴", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai&query_place_id=ChIJGYYh7viKImARYJ_1IOXF_Ek" },
-                { id: 'l3', type: "shop", name: "UNIQLO 鎌倉店", desc: "Day 2 必去：黑色樽領衫", link: "" },
-                { id: 'l4', type: "shop", name: "灌籃高手平交道", desc: "Day 2 途經 (嚴禁停車)", link: "https://www.google.com/maps/search/?api=1&query=Atsugi+PA+Soto-mawari" },
-                { id: 'l5', type: "shop", name: "厚木 PA (Atsugi)", desc: "Day 2 休息站 (40min後)", link: "https://www.google.com/url?sa=E&source=gmail&q=https://www.google.com/maps/search/?api=1%26query=Atsugi+PA" },
-                { id: 'l6', type: "shop", name: "足柄 SA (Ashigara)", desc: "Day 2 休息站 (80min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DAshigara%2BSA" },
-                { id: 'l7', type: "shop", name: "7-11 笛吹御坂店", desc: "Day 4 休息站 (40min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3D7-Eleven%2BFuefuki%2BMisaka" },
-                { id: 'l8', type: "shop", name: "道の駅 南清里", desc: "Day 4 休息站 (90min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DMichinoeki%2BMinami%2BKiyosato" },
-                { id: 'l9', type: "shop", name: "7-11 野邊山店", desc: "Day 4 休息站 (130min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3D7-Eleven%2BNobeyama" },
-                { id: 'l10', type: "shop", name: "上里 SA (Kamisato)", desc: "Day 7 休息站 (40min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DKamisato%2BSA" },
-                { id: 'l11', type: "shop", name: "高坂 SA (Takasaka)", desc: "Day 7 休息站 (80min後)", link: "https://www.google.com/search?q=https://www.google.com/maps/search/%3Fapi%3D1%26query%3DTakasaka%2BSA" }
+                // Day 1
+                { id: 'l1', type: "car", name: "Toyota Rent a Car", desc: "JR 成田站店 (17:00)", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+JR+Narita+Station" },
+                { id: 'l2', type: "shop", name: "Workman Plus", desc: "成田美郷台店 (17:30)", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai" },
+                { id: 'l3', type: "hotel", name: "鎌倉住宿 (Kamakura)", desc: "Check-in (20:30)", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Station" },
+                // Day 2
+                { id: 'l4', type: "shop", name: "UNIQLO 鎌倉店", desc: "必買: 黑色樽領衫", link: "https://www.google.com/maps/search/?api=1&query=UNIQLO+Kamakura" },
+                { id: 'l5', type: "shop", name: "鶴岡八幡宮", desc: "鎌倉散策", link: "https://www.google.com/maps/search/?api=1&query=Tsurugaoka+Hachimangu" },
+                { id: 'l6', type: "shop", name: "鎌倉高校前平交道", desc: "Slam Dunk (勿停車)", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Koko+Mae+Station" },
+                { id: 'l7', type: "car", name: "七里ヶ浜海岸駐車場", desc: "如需落車請泊此", link: "https://www.google.com/maps/search/?api=1&query=Shichirigahama+Coast+Parking" },
+                { id: 'l8', type: "shop", name: "江之島 (Enoshima)", desc: "海邊散步", link: "https://www.google.com/maps/search/?api=1&query=Enoshima" },
+                { id: 'l9', type: "car", name: "厚木 PA (Atsugi)", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=Atsugi+PA" },
+                { id: 'l10', type: "car", name: "足柄 SA (Ashigara)", desc: "休息 (80min後)", link: "https://www.google.com/maps/search/?api=1&query=Ashigara+SA" },
+                { id: 'l11', type: "hotel", name: "河口湖住宿", desc: "THE TOKI", link: "https://www.google.com/maps/search/?api=1&query=THE+TOKI+Kawaguchiko" },
+                // Day 3
+                { id: 'l12', type: "shop", name: "天上山公園纜車", desc: "富士山景", link: "https://www.google.com/maps/search/?api=1&query=Mt.+Fuji+Panoramic+Ropeway" },
+                { id: 'l13', type: "shop", name: "大石公園", desc: "河口湖景", link: "https://www.google.com/maps/search/?api=1&query=Oishi+Park" },
+                { id: 'l14', type: "shop", name: "Lake Bake 麵包工房", desc: "湖畔Cafe", link: "https://www.google.com/maps/search/?api=1&query=Lake+Bake+Kawaguchiko" },
+                { id: 'l15', type: "shop", name: "山麓園 (Sanrokuen)", desc: "晚餐推薦", link: "https://www.google.com/maps/search/?api=1&query=Sanrokuen+Kawaguchiko" },
+                // Day 4
+                { id: 'l16', type: "shop", name: "新倉山淺間神社", desc: "忠靈塔", link: "https://www.google.com/maps/search/?api=1&query=Chureito+Pagoda" },
+                { id: 'l17', type: "shop", name: "CISCO Coffee", desc: "咖啡店", link: "https://www.google.com/maps/search/?api=1&query=CISCO+Coffee+Kawaguchiko" },
+                { id: 'l18', type: "car", name: "7-11 笛吹御坂店", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Fuefuki+Misaka" },
+                { id: 'l19', type: "car", name: "道の駅 南清里", desc: "休息 (90min後)", link: "https://www.google.com/maps/search/?api=1&query=Michi-no-Eki+Minami+Kiyosato" },
+                { id: 'l20', type: "car", name: "7-11 野邊山店", desc: "休息 (130min後)", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Nobeyama" },
+                { id: 'l21', type: "hotel", name: "輕井澤住宿", desc: "ANA Holiday Inn", link: "https://www.google.com/maps/search/?api=1&query=ANA+Holiday+Inn+Karuizawa" },
+                // Day 5/6
+                { id: 'l22', type: "shop", name: "輕井澤王子滑雪場", desc: "Ski Resort", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Hotel+Ski+Resort" },
+                { id: 'l23', type: "shop", name: "雲場池", desc: "Kumoba Pond", link: "https://www.google.com/maps/search/?api=1&query=Kumoba+Pond" },
+                { id: 'l24', type: "shop", name: "榆樹街小鎮", desc: "Harunire Terrace", link: "https://www.google.com/maps/search/?api=1&query=Harunire+Terrace" },
+                { id: 'l25', type: "shop", name: "星野溫泉 蜻蜓之湯", desc: "Tombo-no-yu", link: "https://www.google.com/maps/search/?api=1&query=Hoshino+Onsen+Tombo-no-yu" },
+                // Day 7
+                { id: 'l26', type: "shop", name: "輕井澤 Outlet", desc: "Shopping Plaza", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Shopping+Plaza" },
+                { id: 'l27', type: "car", name: "上里 SA (Kamisato)", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=Kamisato+SA" },
+                { id: 'l28', type: "car", name: "高坂 SA (Takasaka)", desc: "休息 (80min後)", link: "https://www.google.com/maps/search/?api=1&query=Takasaka+SA" },
+                { id: 'l29', type: "hotel", name: "東京住宿", desc: "東京灣潮見王子", link: "https://www.google.com/maps/search/?api=1&query=Tokyo+Bay+Shiomi+Prince+Hotel" },
+                // Day 8
+                { id: 'l30', type: "shop", name: "六本木燈飾", desc: "Roppongi Hills", link: "https://www.google.com/maps/search/?api=1&query=Roppongi+Hills" },
+                { id: 'l31', type: "shop", name: "Chikawa 麵包店", desc: "Chiikawa Bakery", link: "https://www.google.com/maps/search/?api=1&query=Chiikawa+Bakery+Tokyo" }
             ],
             itinerary: [
-                { id: 'i1', day: "Day 1", date: "12/20 (五)", title: "成田 → 鎌倉", details: ["15:55 抵達成田", "17:00 JR成田站取車", "17:30 Workman Plus 買雪靴", "20:30 鎌倉 Check-in", "👉 晚上休息，不再加行程"] },
+                { id: 'i1', day: "Day 1", date: "12/20 (五)", title: "成田 → 鎌倉", details: ["15:55 抵達成田 (UO870)", "17:00 JR成田站取車 (Corolla Cross)", "17:30 Workman Plus 買雪靴", "20:30 鎌倉 Check-in", "👉 晚上休息，不再加行程"] },
                 { id: 'i2', day: "Day 2", date: "12/21 (六)", title: "鎌倉 → 江之島 → 河口湖", details: ["上午: 鎌倉 (UNIQLO買樽領衫)", "途經: 灌籃高手平交道 (拍片經過，勿停車)", "中午: 江之島海邊散步", "⚠️ 16:00 必須離開江之島 (避黑夜山路)", "休息: 厚木PA, 足柄SA", "晚上: 宿河口湖"] },
                 { id: 'i3', day: "Day 3", date: "12/22 (日)", title: "河口湖 (景點日)", details: ["天上山公園纜車", "河口湖遊船", "大石公園", "音樂盒之森", "Lake Bake 麵包工房", "晚餐: 山麓園/Sylvans"] },
                 { id: 'i4', day: "Day 4", date: "12/23 (一)", title: "河口湖 → 輕井澤 (長途)", details: ["早起: 逆富士 / 新倉山淺間神社", "CISCO Coffee", "⚠️ 14:00 必須啟程 (山路結冰)", "休息: 7-11笛吹, 南清里, 7-11野邊山", "晚上: 宿輕井澤"] },
@@ -802,5 +813,3 @@
     </script>
 </body>
 </html>
-
-```
