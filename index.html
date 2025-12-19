@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 日本自駕親子遊 (完整地圖版) - Cloud Collaboration</title>
+    <title>2025 日本自駕親子遊 (v6 最終完整版) - Cloud Collaboration</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -100,7 +100,7 @@
             console.error("Firebase Init Failed:", e);
         }
 
-        const appId = 'japan-trip-2025-industrial'; 
+        const appId = 'japan-trip-2025-industrial-v6'; // Updated App ID for v6
 
         window.firebaseServices = { 
             auth, db, appId, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
@@ -125,75 +125,79 @@
             CloudSnow: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M8 15h.01"/><path d="M8 19h.01"/><path d="M12 17h.01"/><path d="M12 21h.01"/><path d="M16 15h.01"/><path d="M16 19h.01"/></svg>),
             List: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>),
             ExternalLink: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>),
-            Plus: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M5 12h14"/><path d="M12 5v14"/></svg>),
+            Plus: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>),
             Trash2: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>),
             RefreshCw: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 0-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>),
             Edit2: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>),
             X: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>),
             Wifi: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>),
-            AlertTriangle: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>)
+            AlertTriangle: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>),
+            Coffee: ({size, className}) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" className={className}><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" x2="6" y1="1" y2="4"/><line x1="10" x2="10" y1="1" y2="4"/><line x1="14" x2="14" y1="1" y2="4"/></svg>)
         };
 
         const Icon = ({ name, size = 20, className }) => {
-            const SpecificIcon = Icons[name];
-            if (!SpecificIcon) return null;
+            const SpecificIcon = Icons[name] || Icons.MapPin;
             return <SpecificIcon size={size} className={className} />;
         };
 
         // --- Data ---
+        // ⚠️ 蘇蘇行動指令：已包含所有行程地點及休息站 (v6)
         const defaultTripData = {
             startDate: "2025-12-20T15:55:00",
             car: "Toyota Corolla Cross (雪軚)",
             locations: [
                 // Day 1
-                { id: 'l1', type: "car", name: "Toyota Rent a Car", desc: "JR 成田站店 (17:00)", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+JR+Narita+Station" },
-                { id: 'l2', type: "shop", name: "Workman Plus", desc: "成田美郷台店 (17:30)", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai" },
-                { id: 'l3', type: "hotel", name: "鎌倉住宿 (Kamakura)", desc: "Check-in (20:30)", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Station" },
+                { id: 'l1', type: "car", name: "Toyota Rent a Car (成田)", desc: "17:00 取車 | JR站店", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+JR+Narita+Station" },
+                { id: 'l2', type: "shop", name: "Workman Plus (成田)", desc: "17:30 買雪靴/防風褸", link: "https://www.google.com/maps/search/?api=1&query=Workman+Plus+Narita+Misatodai" },
+                { id: 'l3', type: "car", name: "幕張 PA (Makuhari)", desc: "[休息] 駕駛40min後", link: "https://www.google.com/maps/place//data=!3m4!1e2!3m2!1sCIABIhD-uC-kutpLcyaeMXKvKkOx!2e10!4m2!3m1!1s0x601960849091c7db:0x531d558922f1baf7" },
+                { id: 'l4', type: "hotel", name: "鎌倉住宿 (Kamakura)", desc: "20:30 Check-in", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Station" },
                 // Day 2
-                { id: 'l4', type: "shop", name: "UNIQLO 鎌倉店", desc: "必買: 黑色樽領衫", link: "https://www.google.com/maps/search/?api=1&query=UNIQLO+Kamakura" },
-                { id: 'l5', type: "shop", name: "鶴岡八幡宮", desc: "鎌倉散策", link: "https://www.google.com/maps/search/?api=1&query=Tsurugaoka+Hachimangu" },
-                { id: 'l6', type: "shop", name: "鎌倉高校前平交道", desc: "Slam Dunk (勿停車)", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Koko+Mae+Station" },
-                { id: 'l7', type: "car", name: "七里ヶ浜海岸駐車場", desc: "如需落車請泊此", link: "https://www.google.com/maps/search/?api=1&query=Shichirigahama+Coast+Parking" },
-                { id: 'l8', type: "shop", name: "江之島 (Enoshima)", desc: "海邊散步", link: "https://www.google.com/maps/search/?api=1&query=Enoshima" },
-                { id: 'l9', type: "car", name: "厚木 PA (Atsugi)", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=Atsugi+PA" },
-                { id: 'l10', type: "car", name: "足柄 SA (Ashigara)", desc: "休息 (80min後)", link: "https://www.google.com/maps/search/?api=1&query=Ashigara+SA" },
-                { id: 'l11', type: "hotel", name: "河口湖住宿", desc: "THE TOKI", link: "https://www.google.com/maps/search/?api=1&query=THE+TOKI+Kawaguchiko" },
+                { id: 'l5', type: "shop", name: "UNIQLO 鎌倉店", desc: "必買: 黑色樽領衫", link: "https://www.google.com/maps/search/?api=1&query=UNIQLO+Kamakura" },
+                { id: 'l6', type: "shop", name: "鶴岡八幡宮", desc: "鎌倉散策", link: "https://www.google.com/maps/search/?api=1&query=Tsurugaoka+Hachimangu" },
+                { id: 'l7', type: "shop", name: "鎌倉高校前平交道", desc: "Slam Dunk (勿停車)", link: "https://www.google.com/maps/search/?api=1&query=Kamakura+Koko+Mae+Station" },
+                { id: 'l8', type: "car", name: "七里ヶ浜海岸駐車場", desc: "如需落車請泊此", link: "https://www.google.com/maps/search/?api=1&query=Shichirigahama+Coast+Parking" },
+                { id: 'l9', type: "shop", name: "江之島 (Enoshima)", desc: "海邊散步", link: "https://www.google.com/maps/search/?api=1&query=Enoshima" },
+                { id: 'l10', type: "car", name: "厚木 PA (Atsugi)", desc: "[休息] 往河口湖途中", link: "https://www.google.com/maps/search/?api=1&query=Atsugi+PA" },
+                { id: 'l11', type: "car", name: "足柄 SA (Ashigara)", desc: "[休息] 巨型SA/晚餐", link: "https://www.google.com/maps/search/?api=1&query=Ashigara+SA" },
+                { id: 'l12', type: "hotel", name: "河口湖住宿 (THE TOKI)", desc: "富士山景/自駕方便", link: "https://www.google.com/maps/search/?api=1&query=THE+TOKI+Kawaguchiko" },
                 // Day 3
-                { id: 'l12', type: "shop", name: "天上山公園纜車", desc: "富士山景", link: "https://www.google.com/maps/search/?api=1&query=Mt.+Fuji+Panoramic+Ropeway" },
-                { id: 'l13', type: "shop", name: "大石公園", desc: "河口湖景", link: "https://www.google.com/maps/search/?api=1&query=Oishi+Park" },
-                { id: 'l14', type: "shop", name: "Lake Bake 麵包工房", desc: "湖畔Cafe", link: "https://www.google.com/maps/search/?api=1&query=Lake+Bake+Kawaguchiko" },
-                { id: 'l15', type: "shop", name: "山麓園 (Sanrokuen)", desc: "晚餐推薦", link: "https://www.google.com/maps/search/?api=1&query=Sanrokuen+Kawaguchiko" },
+                { id: 'l13', type: "shop", name: "天上山公園纜車", desc: "富士山全景", link: "https://www.google.com/maps/search/?api=1&query=Mt.+Fuji+Panoramic+Ropeway" },
+                { id: 'l14', type: "shop", name: "大石公園", desc: "河口湖景/花園", link: "https://www.google.com/maps/search/?api=1&query=Oishi+Park" },
+                { id: 'l15', type: "shop", name: "Lake Bake 麵包工房", desc: "人氣湖畔Cafe", link: "https://www.google.com/maps/search/?api=1&query=Lake+Bake+Kawaguchiko" },
+                { id: 'l16', type: "shop", name: "山麓園 (Sanrokuen)", desc: "爐端燒晚餐", link: "https://www.google.com/maps/search/?api=1&query=Sanrokuen+Kawaguchiko" },
                 // Day 4
-                { id: 'l16', type: "shop", name: "新倉山淺間神社", desc: "忠靈塔", link: "https://www.google.com/maps/search/?api=1&query=Chureito+Pagoda" },
-                { id: 'l17', type: "shop", name: "CISCO Coffee", desc: "咖啡店", link: "https://www.google.com/maps/search/?api=1&query=CISCO+Coffee+Kawaguchiko" },
-                { id: 'l18', type: "car", name: "7-11 笛吹御坂店", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Fuefuki+Misaka" },
-                { id: 'l19', type: "car", name: "道の駅 南清里", desc: "休息 (90min後)", link: "https://www.google.com/maps/search/?api=1&query=Michi-no-Eki+Minami+Kiyosato" },
-                { id: 'l20', type: "car", name: "7-11 野邊山店", desc: "休息 (130min後)", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Nobeyama" },
-                { id: 'l21', type: "hotel", name: "輕井澤住宿", desc: "ANA Holiday Inn", link: "https://www.google.com/maps/search/?api=1&query=ANA+Holiday+Inn+Karuizawa" },
+                { id: 'l17', type: "shop", name: "新倉山淺間神社", desc: "忠靈塔/樓梯地獄", link: "https://www.google.com/maps/search/?api=1&query=Chureito+Pagoda" },
+                { id: 'l18', type: "shop", name: "CISCO Coffee", desc: "出發前咖啡", link: "https://www.google.com/maps/search/?api=1&query=CISCO+Coffee+Kawaguchiko" },
+                { id: 'l19', type: "car", name: "7-11 笛吹御坂店", desc: "[休息] 山路後平地", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Fuefuki+Misaka" },
+                { id: 'l20', type: "car", name: "道の駅 南清里", desc: "[休息] 必停/纜車/廁所", link: "https://www.google.com/maps/search/?api=1&query=Michi-no-Eki+Minami+Kiyosato" },
+                { id: 'l21', type: "car", name: "7-11 野邊山店", desc: "[休息] 最高海拔/入城前", link: "https://www.google.com/maps/search/?api=1&query=7-Eleven+Nobeyama" },
+                { id: 'l22', type: "hotel", name: "輕井澤住宿 (ANA)", desc: "北輕井澤/雪地", link: "https://www.google.com/maps/search/?api=1&query=ANA+Holiday+Inn+Karuizawa" },
                 // Day 5/6
-                { id: 'l22', type: "shop", name: "輕井澤王子滑雪場", desc: "Ski Resort", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Hotel+Ski+Resort" },
-                { id: 'l23', type: "shop", name: "雲場池", desc: "Kumoba Pond", link: "https://www.google.com/maps/search/?api=1&query=Kumoba+Pond" },
-                { id: 'l24', type: "shop", name: "榆樹街小鎮", desc: "Harunire Terrace", link: "https://www.google.com/maps/search/?api=1&query=Harunire+Terrace" },
-                { id: 'l25', type: "shop", name: "星野溫泉 蜻蜓之湯", desc: "Tombo-no-yu", link: "https://www.google.com/maps/search/?api=1&query=Hoshino+Onsen+Tombo-no-yu" },
+                { id: 'l23', type: "shop", name: "輕井澤王子滑雪場", desc: "Ski Resort", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Hotel+Ski+Resort" },
+                { id: 'l24', type: "shop", name: "雲場池", desc: "天鵝湖/散步", link: "https://www.google.com/maps/search/?api=1&query=Kumoba+Pond" },
+                { id: 'l25', type: "shop", name: "榆樹街小鎮", desc: "Harunire Terrace", link: "https://www.google.com/maps/search/?api=1&query=Harunire+Terrace" },
+                { id: 'l26', type: "shop", name: "星野溫泉 蜻蜓之湯", desc: "Tombo-no-yu", link: "https://www.google.com/maps/search/?api=1&query=Hoshino+Onsen+Tombo-no-yu" },
                 // Day 7
-                { id: 'l26', type: "shop", name: "輕井澤 Outlet", desc: "Shopping Plaza", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Shopping+Plaza" },
-                { id: 'l27', type: "car", name: "上里 SA (Kamisato)", desc: "休息 (40min後)", link: "https://www.google.com/maps/search/?api=1&query=Kamisato+SA" },
-                { id: 'l28', type: "car", name: "高坂 SA (Takasaka)", desc: "休息 (80min後)", link: "https://www.google.com/maps/search/?api=1&query=Takasaka+SA" },
-                { id: 'l29', type: "hotel", name: "東京住宿", desc: "東京灣潮見王子", link: "https://www.google.com/maps/search/?api=1&query=Tokyo+Bay+Shiomi+Prince+Hotel" },
-                // Day 8
-                { id: 'l30', type: "shop", name: "六本木燈飾", desc: "Roppongi Hills", link: "https://www.google.com/maps/search/?api=1&query=Roppongi+Hills" },
-                { id: 'l31', type: "shop", name: "Chikawa 麵包店", desc: "Chiikawa Bakery", link: "https://www.google.com/maps/search/?api=1&query=Chiikawa+Bakery+Tokyo" }
+                { id: 'l27', type: "shop", name: "輕井澤 Outlet", desc: "Shopping Plaza", link: "https://www.google.com/maps/search/?api=1&query=Karuizawa+Prince+Shopping+Plaza" },
+                { id: 'l28', type: "car", name: "上里 SA (Kamisato)", desc: "[休息] 買手信", link: "https://www.google.com/maps/search/?api=1&query=Kamisato+SA" },
+                { id: 'l29', type: "car", name: "高坂 SA (Takasaka)", desc: "[休息] 入東京前最後", link: "https://www.google.com/maps/search/?api=1&query=Takasaka+SA" },
+                { id: 'l30', type: "hotel", name: "東京住宿 (潮見王子)", desc: "近東京站/有大浴場", link: "https://www.google.com/maps/search/?api=1&query=Tokyo+Bay+Shiomi+Prince+Hotel" },
+                // Day 8/9
+                { id: 'l31', type: "shop", name: "六本木燈飾", desc: "Roppongi Hills", link: "https://www.google.com/maps/search/?api=1&query=Roppongi+Hills" },
+                { id: 'l32', type: "shop", name: "Chikawa 麵包店", desc: "Chiikawa Bakery", link: "https://www.google.com/maps/search/?api=1&query=Chiikawa+Bakery+Tokyo" },
+                { id: 'l33', type: "car", name: "酒々井 PA (Shisui)", desc: "[休息] 機場前最後整理", link: "https://maps.google.com/maps/contrib/112118388075913951992" },
+                { id: 'l34', type: "car", name: "Toyota 還車 (機場店)", desc: "15:30 還車", link: "https://www.google.com/maps/search/?api=1&query=Toyota+Rent+a+Car+Narita+Airport&query_place_id=ChIJrzDaPXzzImARWWX91VYWI1w" }
             ],
             itinerary: [
-                { id: 'i1', day: "Day 1", date: "12/20 (五)", title: "成田 → 鎌倉", details: ["15:55 抵達成田 (UO870)", "17:00 JR成田站取車 (Corolla Cross)", "17:30 Workman Plus 買雪靴", "20:30 鎌倉 Check-in", "👉 晚上休息，不再加行程"] },
-                { id: 'i2', day: "Day 2", date: "12/21 (六)", title: "鎌倉 → 江之島 → 河口湖", details: ["上午: 鎌倉 (UNIQLO買樽領衫)", "途經: 灌籃高手平交道 (拍片經過，勿停車)", "中午: 江之島海邊散步", "⚠️ 16:00 必須離開江之島 (避黑夜山路)", "休息: 厚木PA, 足柄SA", "晚上: 宿河口湖"] },
+                { id: 'i1', day: "Day 1", date: "12/20 (五)", title: "成田 → 鎌倉", details: ["15:55 抵達成田 (UO870)", "17:00 JR成田站取車 (Corolla Cross)", "17:30 Workman Plus 買雪靴", "🚗 車程: 往鎌倉 (約 1.5hr)", "🛑 休息: 幕張 PA (Makuhari)", "20:30 鎌倉 Check-in", "👉 晚上休息，不再加行程"] },
+                { id: 'i2', day: "Day 2", date: "12/21 (六)", title: "鎌倉 → 江之島 → 河口湖", details: ["上午: 鎌倉 (UNIQLO買樽領衫)", "途經: 灌籃高手平交道 (拍片經過，勿停車)", "中午: 江之島海邊散步", "⚠️ 16:00 必須離開江之島 (避黑夜山路)", "🛑 休息 1: 厚木 PA (Atsugi)", "🛑 休息 2: 足柄 SA (Ashigara)", "晚上: 宿河口湖"] },
                 { id: 'i3', day: "Day 3", date: "12/22 (日)", title: "河口湖 (景點日)", details: ["天上山公園纜車", "河口湖遊船", "大石公園", "音樂盒之森", "Lake Bake 麵包工房", "晚餐: 山麓園/Sylvans"] },
-                { id: 'i4', day: "Day 4", date: "12/23 (一)", title: "河口湖 → 輕井澤 (長途)", details: ["早起: 逆富士 / 新倉山淺間神社", "CISCO Coffee", "⚠️ 14:00 必須啟程 (山路結冰)", "休息: 7-11笛吹, 南清里, 7-11野邊山", "晚上: 宿輕井澤"] },
-                { id: 'i5', day: "Day 5", date: "12/24 (二)", title: "平安夜滑雪", details: ["全日: 滑雪場", "重點: 專注滑雪，不加行程", "晚上: 宿輕井澤"] },
-                { id: 'i6', day: "Day 6", date: "12/25 (三)", title: "輕井澤自駕遊", details: ["雲場池 / 舊輕井澤銀座通", "聖保羅教堂 / 白絲瀑布", "榆樹街小鎮 / 石之教會", "星野溫泉「蜻蜓之湯」"] },
-                { id: 'i7', day: "Day 7", date: "12/26 (四)", title: "輕井澤 → 東京", details: ["上午: 王子飯店滑雪場", "下午: 輕井澤 Outlet", "⚠️ 16:30 離開 Outlet (避塞車)", "休息: 上里SA, 高坂SA", "晚上: 宿東京"] },
+                { id: 'i4', day: "Day 4", date: "12/23 (一)", title: "河口湖 → 輕井澤 (長途)", details: ["早起: 逆富士 / 新倉山淺間神社", "CISCO Coffee", "⚠️ 14:00 必須啟程 (山路結冰)", "🛑 休息 1: 7-11 笛吹御坂店", "🛑 休息 2: 道の駅 南清里 (必停)", "🛑 休息 3: 7-11 野邊山店", "晚上: 宿輕井澤 (ANA Holiday Inn)"] },
+                { id: 'i5', day: "Day 5", date: "12/24 (二)", title: "平安夜滑雪", details: ["全日: 輕井澤王子滑雪場", "重點: 專注滑雪，不加行程", "晚餐: 酒店/滑雪場附近", "晚上: 宿輕井澤"] },
+                { id: 'i6', day: "Day 6", date: "12/25 (三)", title: "輕井澤自駕遊", details: ["雲場池 / 舊輕井澤銀座通", "聖保羅教堂 / 白絲瀑布", "榆樹街小鎮 / 石之教會", "星野溫泉「蜻蜓之湯」", "晚上: 宿輕井澤"] },
+                { id: 'i7', day: "Day 7", date: "12/26 (四)", title: "輕井澤 → 東京", details: ["上午: 王子飯店滑雪場 (Optional)", "下午: 輕井澤 Outlet (Shopping)", "⚠️ 16:30 離開 Outlet (避塞車)", "🛑 休息 1: 上里 SA (Kamisato)", "🛑 休息 2: 高坂 SA (Takasaka)", "晚上: 宿東京 (潮見王子)"] },
                 { id: 'i8', day: "Day 8", date: "12/27 (五)", title: "東京", details: ["六本木燈飾", "哈利波特", "Chikawa 麵包店", "晚上: 宿東京"] },
-                { id: 'i9', day: "Day 9", date: "12/28 (六)", title: "早機回程", details: ["04:55 起飛返香港", "(需於 27/12 晚或半夜前往機場)"] }
+                { id: 'i9', day: "Day 9", date: "12/28 (六)", title: "早機回程", details: ["11:00 Check-out", "🚗 車程: 往成田機場", "🛑 休息: 酒々井 PA (Shisui) [最後整理]", "15:30 機場店還車 (Toyota)", "17:00 機場 Check-in", "04:55 起飛返香港 (UO871?)"] }
             ],
             defaultTodos: [
                 { id: "t1", text: "[文件] 下載 Visit Japan Web (填好+Cap圖)", done: false },
