@@ -1,3 +1,6 @@
 {
-  "enabledMcpjsonServers": ["longbridge"]
+  "enabledMcpjsonServers": ["longbridge"],
+  "permissions": {
+    "allow": ["Bash(longbridge *)"]
+  }
 }

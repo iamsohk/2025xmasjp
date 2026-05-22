@@ -1,8 +1,7 @@
 {
   "mcpServers": {
     "longbridge": {
-      "type": "url",
-      "url": "https://open.longbridge.com/skill?invite-code"
+      "url": "https://openapi.longbridge.com/mcp"
     }
   }
 }

@@ -1,0 +1,755 @@
+{
+  "version": 1,
+  "skills": {
+    "longbridge": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge/SKILL.md",
+      "computedHash": "d14ca791333217c51319a64967246b7c34c6d83c5cc6005fc0cc67d29b2777f8"
+    },
+    "longbridge-adr-premium": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-adr-premium/SKILL.md",
+      "computedHash": "69ac001a58535267f303fd97347c4adf6eafab92060acb50b496fac868afa02b"
+    },
+    "longbridge-ah-premium": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ah-premium/SKILL.md",
+      "computedHash": "37967e0aab916b04e1a59abfbe0dcd4b673748fe1a074e428fd1d3db48b3c044"
+    },
+    "longbridge-alert": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-alert/SKILL.md",
+      "computedHash": "c4cb3095cac18aca7c56e8f602b1ab79d265f8bebad7ece099a87b4651927e2c"
+    },
+    "longbridge-analyst-estimates": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-analyst-estimates/SKILL.md",
+      "computedHash": "b5beb2081ef9c8b23f3bcf87d6413795c7f4f712c6d5d56dfa3942bf3d6aa7cb"
+    },
+    "longbridge-anomaly": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-anomaly/SKILL.md",
+      "computedHash": "b60db4e2b715bcb06174397f8d2357451b8bc9f2f59d84d9b21fd5b5315ebae8"
+    },
+    "longbridge-ark-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ark-analysis/SKILL.md",
+      "computedHash": "7f8b9c57100cdf0eaa47b1dbf2d18f909013e672a312519c12393a5a23efd8d1"
+    },
+    "longbridge-asset-allocation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-asset-allocation/SKILL.md",
+      "computedHash": "f9a96e70d2102ad9267be7273bb028132f199b04fb677e2b4d8aec7ed414237d"
+    },
+    "longbridge-basicinfo": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-basicinfo/SKILL.md",
+      "computedHash": "f0123c44a2708879bd84206d864c085f3d86866a446c300fe82efca4c5a4fb81"
+    },
+    "longbridge-behavioral-finance": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-behavioral-finance/SKILL.md",
+      "computedHash": "246a7765a97fda5e4433b6930170f1e3275f38d4dcb14dbcb7d6d9f513d533ad"
+    },
+    "longbridge-buffett-moat-analyzer": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-buffett-moat-analyzer/SKILL.md",
+      "computedHash": "4bd73afdb5f838952c012466d1dbafa8a67facefa42f67aff8e14f44cb916960"
+    },
+    "longbridge-buffett-moat-stock-screener": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-buffett-moat-stock-screener/SKILL.md",
+      "computedHash": "272daa665f968d0cd702193d58f1038c68fd381ed419ed023b19189809d8ed6c"
+    },
+    "longbridge-business-query": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-business-query/SKILL.md",
+      "computedHash": "cf271f82c2822cfdab9a3362f07461bd5b37967d72b45752df63bdeb4013e924"
+    },
+    "longbridge-calendar": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-calendar/SKILL.md",
+      "computedHash": "fe59a8d87aa9957afee94446c48e5eba5ad8c4853138bc6341f49465a4f63941"
+    },
+    "longbridge-candlestick": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-candlestick/SKILL.md",
+      "computedHash": "14cd15d814134222ea19b84a2d0b61ffdf6c2f492544bd163d73762fa3fdb555"
+    },
+    "longbridge-capital-flow": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-capital-flow/SKILL.md",
+      "computedHash": "52e8d6e65a5489a16c064f3784718e72eedbd649c14805b25096ce4efd0c9be7"
+    },
+    "longbridge-catalyst-radar": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-catalyst-radar/SKILL.md",
+      "computedHash": "f42e0a61d401dee66f8f02adfd6cfdd01d9cc008cf553874e93be65aefff05ca"
+    },
+    "longbridge-chanlun": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-chanlun/SKILL.md",
+      "computedHash": "c9987ae18adc3ca01b4bfd9f823ad55f3afbe47c832e0473e696f588af51f9e6"
+    },
+    "longbridge-company-profile": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-company-profile/SKILL.md",
+      "computedHash": "cd2b34177ca452805b35512a906b3a50fd53cc73f7bacf5ab5bcc0b804475c90"
+    },
+    "longbridge-company-tearsheet": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-company-tearsheet/SKILL.md",
+      "computedHash": "6374a2055fff6f4ec5dd12d7e2283e3831ddab13c4f7c5a86acae067944676d2"
+    },
+    "longbridge-competitive-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-competitive-analysis/SKILL.md",
+      "computedHash": "b2efc16c932e61bac2f55a1e6f2756ee8d317eb0ac7bd6fd074804cc90e1414a"
+    },
+    "longbridge-consensus": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-consensus/SKILL.md",
+      "computedHash": "38890b334ddba0293fe1861a2cfc6d0767763c5a617cc08c5c8530b3b9d2e584"
+    },
+    "longbridge-constituent": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-constituent/SKILL.md",
+      "computedHash": "786d4d9e0a45f9f41916f1998b98eb60c717f8698d919a0418157d80f93a8a5a"
+    },
+    "longbridge-corporate": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-corporate/SKILL.md",
+      "computedHash": "76f50f953576d0c9c26624f6a4c4a22c98261f86f2abb9d1a9b3a79f6fc5e9c2"
+    },
+    "longbridge-corporate-events": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-corporate-events/SKILL.md",
+      "computedHash": "e7663a5c7215ab8a962d217fab6714b11387efe2f794125fd240bfc12b299092"
+    },
+    "longbridge-correlation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-correlation/SKILL.md",
+      "computedHash": "c98d11fd3863a9eb5a18f39b5482256274477c70b4eebddb0a35740361029c8d"
+    },
+    "longbridge-coverage-initiation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-coverage-initiation/SKILL.md",
+      "computedHash": "7374f2d3ba4013dcad488ffc1a15bd933183f9bf8e517ec6253039d7f240c24b"
+    },
+    "longbridge-dca": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-dca/SKILL.md",
+      "computedHash": "44d2bab5811f6585b7be3042693b52b1919fc6118c230a41a620fc8a322ebe70"
+    },
+    "longbridge-dcf": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-dcf/SKILL.md",
+      "computedHash": "1f8f6657be91dae1cbd8a6ad8824a94c61f91748f42ff7b6f1a5cddeaf5181e9"
+    },
+    "longbridge-defi-yield": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-defi-yield/SKILL.md",
+      "computedHash": "04701cef030c160125b405c69c0633fc68256277acef39aed9828feb4bc4cd41"
+    },
+    "longbridge-depth": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-depth/SKILL.md",
+      "computedHash": "71f597955208155a7a214c208c1b4d9c45612ecc63c50f2f3e341e99b03f1c0e"
+    },
+    "longbridge-derivatives": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-derivatives/SKILL.md",
+      "computedHash": "9cd614ccf5bb98b8e59ad11911fdf8cb4640604be7d51edbdc17600ad4800418"
+    },
+    "longbridge-dividend-screen": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-dividend-screen/SKILL.md",
+      "computedHash": "33f39885388580d858bc41ee399a077e4016a4411769085a3154c93c2972ffc4"
+    },
+    "longbridge-earnings": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-earnings/SKILL.md",
+      "computedHash": "32d49c914bb0b36ac19d99a86e73c15489bf4a65875eb46d6804c03531dd9ef9"
+    },
+    "longbridge-earnings-preview": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-earnings-preview/SKILL.md",
+      "computedHash": "b7ca93aa89d056e3288be421922077a3c223ac3392c5636dbc66741e5c3bfbf9"
+    },
+    "longbridge-earnings-revision": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-earnings-revision/SKILL.md",
+      "computedHash": "7de111ef10766a19d7ebe73c4d2a20edd783814650149d8f2f4d64f0656cfadd"
+    },
+    "longbridge-elliott": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-elliott/SKILL.md",
+      "computedHash": "e91cc4fad3e76ff3e6b502ac4f57ae616ab795f4abc00802f613c0b7b2480b25"
+    },
+    "longbridge-elliott-wave": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-elliott-wave/SKILL.md",
+      "computedHash": "1417609dc8372a81a7f033b94cdc65a101a271be9edfb4aefa1672b909f5a6d5"
+    },
+    "longbridge-etf-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-etf-analysis/SKILL.md",
+      "computedHash": "46edd06b0b5ac35f15c1b14215dee9a41c6f48bd7a2c15b28595a83fe0bba60c"
+    },
+    "longbridge-etf-flow": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-etf-flow/SKILL.md",
+      "computedHash": "2d863ee5c0223f2adb483fd7ebc7282e426ebcb8a972f2bcb04c88aa3c010dc4"
+    },
+    "longbridge-event-opportunity": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-event-opportunity/SKILL.md",
+      "computedHash": "397739db22b7b21301ccd5ffa7ea9c655cacfced59d7e01c5d2720bbe4403652"
+    },
+    "longbridge-event-strategy": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-event-strategy/SKILL.md",
+      "computedHash": "cae4e4915f338fabf707ff54fe367c7be5cc9ec73dabc71b56dd1de8d81a89b9"
+    },
+    "longbridge-execution-model": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-execution-model/SKILL.md",
+      "computedHash": "f3562657a4bafeb2d62ec7d6ddf2ebc5fa1fbebc3501f0dec0e4e3da8124d23e"
+    },
+    "longbridge-factor-research": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-factor-research/SKILL.md",
+      "computedHash": "e59e0e3cb35c5020363f6b6fefd4fe6bb028ff57f6a5d018b5e4da82a4bb9512"
+    },
+    "longbridge-factor-screen": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-factor-screen/SKILL.md",
+      "computedHash": "1336409a9ade250e76b58bc317c2650b376edf9bb35b3f62ae42459f61ee3d38"
+    },
+    "longbridge-finance-query": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-finance-query/SKILL.md",
+      "computedHash": "5343d77e5811b3ef1476177069d44e26e3b2ebd7f6b41e496bbe3a80eef68b15"
+    },
+    "longbridge-financial-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-financial-analysis/SKILL.md",
+      "computedHash": "e7bdcac6f5564aa708b6f62516948d9751d38a1653841a82785e3d84fa018297"
+    },
+    "longbridge-financial-checkup": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-financial-checkup/SKILL.md",
+      "computedHash": "46ddccd0040a2160c90ef3d43001377eeec82062f24bbb02251050a89c606b01"
+    },
+    "longbridge-financial-planning": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-financial-planning/SKILL.md",
+      "computedHash": "b60e6a60d37c701a43b06baa1f808df07d24dda68a7eb9657d8657461f02de7f"
+    },
+    "longbridge-financial-report": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-financial-report/SKILL.md",
+      "computedHash": "5bfb7e7b76047028473119ae9b849f2c74cb20a6c33e6ef64e517690fcd1a426"
+    },
+    "longbridge-flows": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-flows/SKILL.md",
+      "computedHash": "ab58c90ca1bb7488928d9668f33fe5ff11430f4743827fa19829ee63794164c1"
+    },
+    "longbridge-fundamental": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-fundamental/SKILL.md",
+      "computedHash": "fd71d938d698f7d5339c85cb6f9d3d7e5c1c41545205c5471b563989d2706025"
+    },
+    "longbridge-fx": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-fx/SKILL.md",
+      "computedHash": "8feab967ad58ee6fa5ebe21358f5f739d96fbdd92efc290d6b7cf7e7e78f80d7"
+    },
+    "longbridge-fx-carry": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-fx-carry/SKILL.md",
+      "computedHash": "dd5f82022f9b47edaa684c987119127c9d144f1c78474ef8c5c3d866a4dab489"
+    },
+    "longbridge-graham-screener": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-graham-screener/SKILL.md",
+      "computedHash": "97c48dc3d12293e96e948dd1683bb207d47ea44c066a05be6b171f48345eaaf3"
+    },
+    "longbridge-graham-stock-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-graham-stock-analysis/SKILL.md",
+      "computedHash": "63bd68dea004e50e9706cb2fc3f980f291a94f67cf1a6321e3324d9d8f2656a2"
+    },
+    "longbridge-harmonic": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-harmonic/SKILL.md",
+      "computedHash": "5e9697b76698d870b382268b3aae55b8549c24c4d7e66a66ff68eb42294d9ff7"
+    },
+    "longbridge-hedging": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-hedging/SKILL.md",
+      "computedHash": "c8eee87e4ee533bb11ee7975290cf7b22aa01144d120a53c544b1bcd94b86494"
+    },
+    "longbridge-ichimoku": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ichimoku/SKILL.md",
+      "computedHash": "bfa000ef221e29d94df088229977dcd39c1c90120ff70350dd00352c183357ca"
+    },
+    "longbridge-index-quote": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-index-quote/SKILL.md",
+      "computedHash": "4bc60aa0de6233d7c7af2e7c2e643615c314490a31569422d474ae8522a9fc6c"
+    },
+    "longbridge-industry-overview": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-industry-overview/SKILL.md",
+      "computedHash": "79895cc9fba20ac5207965a628429b254f249d43b1f378d56ca7a724abb08bcb"
+    },
+    "longbridge-industry-valuation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-industry-valuation/SKILL.md",
+      "computedHash": "d9417984e47d7a9cb287226844cb0cdeda2559d8d37c4486d56e674438ad5b21"
+    },
+    "longbridge-insresearch": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-insresearch/SKILL.md",
+      "computedHash": "fff06b62d4a82bc2eb8f72b19c3fa43b6ea48665dca4048075154438fd3e3bcf"
+    },
+    "longbridge-investment-ideas": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-investment-ideas/SKILL.md",
+      "computedHash": "4593549421b5ba9bdecbd517997e931520db7ee76538dee434045bf852178c20"
+    },
+    "longbridge-investment-proposal": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-investment-proposal/SKILL.md",
+      "computedHash": "5337584aaa70632840dabc874175757111d313bf71e48800c872145ef2e242a5"
+    },
+    "longbridge-investors": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-investors/SKILL.md",
+      "computedHash": "d1d1cc14859ea913ad0dde6da4b1c20d9be8207965dfcf2148c8b1a796cc775c"
+    },
+    "longbridge-ipo": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ipo/SKILL.md",
+      "computedHash": "c2e6dab6697cf61066a31596ec0441b07c5715e3d205a04994965dc2e96aab2a"
+    },
+    "longbridge-kline": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-kline/SKILL.md",
+      "computedHash": "afb4fb06b5ad4dbd8e04a1b640dcac581298e143328850992c9445a1fd405982"
+    },
+    "longbridge-market-microstructure": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-market-microstructure/SKILL.md",
+      "computedHash": "77ecae5528ef8b02083aa2f1d8597d7cb360d909afde451351ea3cccd5da0d55"
+    },
+    "longbridge-market-scanner": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-market-scanner/SKILL.md",
+      "computedHash": "d2681566c6c2374c6c4799386953e4b29c825a3d8a4a21858d6fbe83eea65d0b"
+    },
+    "longbridge-market-temp": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-market-temp/SKILL.md",
+      "computedHash": "87e50d1f16dece22293a59def9904e96ce7d5a497cccaaf330db0b91ebd8c245"
+    },
+    "longbridge-ml-strategy": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ml-strategy/SKILL.md",
+      "computedHash": "e719061e63da734153747f89d49b8957dd3fd4349ab195597860f12892170487"
+    },
+    "longbridge-morning-brief": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-morning-brief/SKILL.md",
+      "computedHash": "10c09d6981c9918a3edef5c2d770904e33f3a567ad7e7144282f8eaec7e00532"
+    },
+    "longbridge-multifactor": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-multifactor/SKILL.md",
+      "computedHash": "a3e26e4cdb2debdc6e8ce2c547d908ff8b36f2d5771ce510ce1d4a257b0c92e2"
+    },
+    "longbridge-news": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-news/SKILL.md",
+      "computedHash": "89f6a3491915d1e68c0d5beda7930be8098b014d47d98a5e9c258ca6ec76eeca"
+    },
+    "longbridge-northbound-flow": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-northbound-flow/SKILL.md",
+      "computedHash": "1d648690c9cd4223cf5874e8e9ad70573fa4e756e98180984a98e2f478fd3698"
+    },
+    "longbridge-onchain": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-onchain/SKILL.md",
+      "computedHash": "ee5bfdd6e410f2085731a5433e6748760e8453add72c3cfb628855c74c70954c"
+    },
+    "longbridge-operating": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-operating/SKILL.md",
+      "computedHash": "f8def8fea854f80f3880a3d9313b805eb2965e10abb482cc9f349929cf416aaa"
+    },
+    "longbridge-options-advanced": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-options-advanced/SKILL.md",
+      "computedHash": "87c8944a0b205b83ed69d497e3e512321f9b1319c32e753aecda2ebb3eec6450"
+    },
+    "longbridge-options-pnl": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-options-pnl/SKILL.md",
+      "computedHash": "33bc3f7fb05ec68c97f9ff777c5318ae2f5a43f6fcb8c49b2575089689c57429"
+    },
+    "longbridge-options-strategy": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-options-strategy/SKILL.md",
+      "computedHash": "2083cd97a79e7b1f9776e6b5dbe38786c07ced18d818e90e48e1be6667ae9865"
+    },
+    "longbridge-options-volatility": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-options-volatility/SKILL.md",
+      "computedHash": "d11f51907279e4a32f1621f397ef0df7bd97723539fe95dd2b75e400a3a610bf"
+    },
+    "longbridge-orders": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-orders/SKILL.md",
+      "computedHash": "2011fdee5ac80354eedefb894bfb54bbdb135b4328b113547f65639ba61d9e00"
+    },
+    "longbridge-ownership": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-ownership/SKILL.md",
+      "computedHash": "d799345167cf3e8c5046c99454a2dc88d60bf9666a8bd4263db0aaabfe1b962a"
+    },
+    "longbridge-pairs-trading": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-pairs-trading/SKILL.md",
+      "computedHash": "754f7423b020c117ad43ff6297faf02d86673b8a06d71071c143addc87541ed5"
+    },
+    "longbridge-peer-comparison": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-peer-comparison/SKILL.md",
+      "computedHash": "24dd443d6d11b65374729288ac85310d71cecbeefd40dd59a00e7ebb838be979"
+    },
+    "longbridge-performance-attribution": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-performance-attribution/SKILL.md",
+      "computedHash": "0da4efebca5e0a4fcf928f071ea8cf06b7a0972b3654152dee6f523111780f49"
+    },
+    "longbridge-portfolio": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-portfolio/SKILL.md",
+      "computedHash": "c4eb28dfd22109728c87dda6ffac85476f3cb44eef00d5d934919712740ab6bc"
+    },
+    "longbridge-portfolio-diagnosis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-portfolio-diagnosis/SKILL.md",
+      "computedHash": "89162c5a682c7afd119cfd670d8f7354dd5e49952749ec19e6dab6650bb3420a"
+    },
+    "longbridge-portfolio-rebalance": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-portfolio-rebalance/SKILL.md",
+      "computedHash": "ca1a29c203082f921c37a2f17cfb2d184a108918d0b14ed87e809835dc4d8dc1"
+    },
+    "longbridge-positions": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-positions/SKILL.md",
+      "computedHash": "afd5dd08e88287d7750fa5ddfb873f677feb12fbd7de53199a98305851b8f61a"
+    },
+    "longbridge-post-investment": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-post-investment/SKILL.md",
+      "computedHash": "f66e6128653384c55bc107e81e6a5eb7e8717d2e969eb6a4f493841e1783792a"
+    },
+    "longbridge-profit-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-profit-analysis/SKILL.md",
+      "computedHash": "d65c4968461e97d415d0c41b912b592e791c9b214de04f5bf671039e9027aefc"
+    },
+    "longbridge-quant": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-quant/SKILL.md",
+      "computedHash": "fcc3bbc78545cdf0da4b6d63bb107de618b4326c66bbcb3fae5ec7b4726743b2"
+    },
+    "longbridge-quant-stats": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-quant-stats/SKILL.md",
+      "computedHash": "9bd445ac8e99e5ac21a2940067ba002194c1854b44a648bddae961166e963d49"
+    },
+    "longbridge-quote": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-quote/SKILL.md",
+      "computedHash": "8dc43832af171df76f51e83d2c87906f35cf2834101710d213ecc197fc46c6cb"
+    },
+    "longbridge-regulatory-kb": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-regulatory-kb/SKILL.md",
+      "computedHash": "4d9fc5f29d0abb5145d2a70f5e250ad6e7c069364780b7daa9829b0c1bb96d65"
+    },
+    "longbridge-risk-analysis": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-risk-analysis/SKILL.md",
+      "computedHash": "340288f6145abeb7ddba3208ba5fc413e7550e5f39a7f486d359591fb61262ab"
+    },
+    "longbridge-risk-return": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-risk-return/SKILL.md",
+      "computedHash": "687546f60abf4511b174e297c14e1454e4e9551b8755f29aaddbbfa53d929da7"
+    },
+    "longbridge-seasonality": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-seasonality/SKILL.md",
+      "computedHash": "62583132eec33936e239329e622d4c36c5006895621e8cdd8b086ab8b9461448"
+    },
+    "longbridge-sec-filings": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-sec-filings/SKILL.md",
+      "computedHash": "18a398574b708aee819056b768bc97b059cf15d08f38e4dce1726eeddfa0bcb7"
+    },
+    "longbridge-sector-monitor": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-sector-monitor/SKILL.md",
+      "computedHash": "57e0a693a7cb2edd5a3ee7d8900e5c6a39a8121c40a50c4e86f2f44b3f7907e0"
+    },
+    "longbridge-sector-rotation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-sector-rotation/SKILL.md",
+      "computedHash": "b56fb2f54a87d27cde93431c72ee4683d68f8a957b6f5030645e5023ec0ba0fd"
+    },
+    "longbridge-sector-screener": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-sector-screener/SKILL.md",
+      "computedHash": "d9067e7736df0abf084cfa55396dec52b3b1801e5f7fd1470d2c1ca6ce15f508"
+    },
+    "longbridge-security-list": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-security-list/SKILL.md",
+      "computedHash": "6463c2964a6d9fa600ef8f75b33b98b8f2ed00528e34021a9ddc4cded0b4a290"
+    },
+    "longbridge-sharelist": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-sharelist/SKILL.md",
+      "computedHash": "9ce2074e6180cc7d5c87c2ab599ccb32d282d1d6d38b12d4559ea4a094b503ed"
+    },
+    "longbridge-smallcap-growth": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-smallcap-growth/SKILL.md",
+      "computedHash": "845d9167a652bb45fc0aecdd88a0187a999071cbad608839ab42a3421fb454b3"
+    },
+    "longbridge-smc": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-smc/SKILL.md",
+      "computedHash": "96a5927803f4b883a2d0a0ff0fa677aec03433ba2a3234894019876e35c0c453"
+    },
+    "longbridge-statement": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-statement/SKILL.md",
+      "computedHash": "331b1ade9c1e0a2ede4e91659754b6231b14879bd81264e1d6aaecf27023b228"
+    },
+    "longbridge-stock-research": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-stock-research/SKILL.md",
+      "computedHash": "dcb310b3c56131bff4f2c047a85422fef54e2fcde2b5ca786bf5f2e708e240e5"
+    },
+    "longbridge-strategy-optimizer": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-strategy-optimizer/SKILL.md",
+      "computedHash": "39a7f40c5da7b7e9edd2a56d8db3119341fe81c99d0309d85bd909937a596c95"
+    },
+    "longbridge-subscriptions": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-subscriptions/SKILL.md",
+      "computedHash": "c0fa0710f6d95c684bd8f6bfd47e5ef5e440621871136ad5d8b0e931164fad7d"
+    },
+    "longbridge-supply-chain": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-supply-chain/SKILL.md",
+      "computedHash": "b54a0afbc41e57095c9f4d6eb99bb0e4d940fd1d99c990d34235c3606fed8783"
+    },
+    "longbridge-tax-harvesting": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-tax-harvesting/SKILL.md",
+      "computedHash": "dbb5c8532eafcf52bf3904fb763b610635b00c7a0bd59b3bf1cfdf7fbb4239b8"
+    },
+    "longbridge-tech-hype": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-tech-hype/SKILL.md",
+      "computedHash": "3afc92cce0fa2030465b75d0d53288c3736fa8ac95c91d871cf8f0cd2de66468"
+    },
+    "longbridge-technical": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-technical/SKILL.md",
+      "computedHash": "6ccf20202f9f98fe9fc314d2b8565de567e91be9eceda97800619138231a6fb4"
+    },
+    "longbridge-thesis-tracker": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-thesis-tracker/SKILL.md",
+      "computedHash": "de498c99dd867c7fc380529ee2b1db673f340c37a0201ca6c73b608b87712272"
+    },
+    "longbridge-topic": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-topic/SKILL.md",
+      "computedHash": "add8b3134118ac6d1182fa0934647333b47f066e105d812cb5d0956df7dad64e"
+    },
+    "longbridge-valuation": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-valuation/SKILL.md",
+      "computedHash": "1a4136c8044fd606c5eaf7c31ecd7f37dd9db4a52162ede7fea16cdf2f9917a0"
+    },
+    "longbridge-valuation-methodology": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-valuation-methodology/SKILL.md",
+      "computedHash": "cb18bbd582a14528efbb83eb5b7176a8758a04247da21529e0b5f86364595e98"
+    },
+    "longbridge-valuation-rank": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-valuation-rank/SKILL.md",
+      "computedHash": "e30429c868137e21fc382caeae439f1d1bae68b323cedd8270158bad8cd9c154"
+    },
+    "longbridge-value-screen": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-value-screen/SKILL.md",
+      "computedHash": "1fe73c52ae8ba846beba572682d5118d44d752bf2b5d46affee8633af4fcdd1f"
+    },
+    "longbridge-volatility-strategy": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-volatility-strategy/SKILL.md",
+      "computedHash": "e9d8b6e7c231da2b5a2d45ee6dd6203bf3dba623076b68e42ec939ef5fe4ae89"
+    },
+    "longbridge-watchlist": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-watchlist/SKILL.md",
+      "computedHash": "ac3c8167d363cc924303dc220d99c2ce1497767f811ca9ba2360209a74000e3e"
+    },
+    "longbridge-watchlist-admin": {
+      "source": "longbridge/skills",
+      "sourceType": "github",
+      "skillPath": "skills/longbridge-watchlist-admin/SKILL.md",
+      "computedHash": "c50929b1c821e37b35a383a334bf32b5d7bc2ddf8591926506c91cd1ac053dbe"
+    }
+  }
+}
