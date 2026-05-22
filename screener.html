@@ -7,177 +7,91 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+HK:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --black: #18181b; --white: #ffffff; --gray: #f4f4f5; --border: #d4d4d8; }
+  :root { --black:#18181b; --white:#fff; --gray:#f4f4f5; --border:#d4d4d8; }
   * { box-sizing: border-box; }
   body {
-    font-family: 'Noto Sans HK', sans-serif;
-    background: var(--white);
-    color: var(--black);
-    background-image: linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: 100vh;
+    font-family:'Noto Sans HK',sans-serif; background:var(--white); color:var(--black);
+    background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);
+    background-size:20px 20px; min-height:100vh;
   }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-  .panel {
-    background: var(--white);
-    border: 2px solid var(--black);
-    box-shadow: 4px 4px 0 var(--black);
-  }
-  .btn {
-    border: 2px solid var(--black);
-    background: var(--black);
-    color: var(--white);
-    padding: 8px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .875rem;
-    cursor: pointer;
-    transition: transform .08s, box-shadow .08s;
-    box-shadow: 3px 3px 0 #555;
-  }
-  .btn:active { transform: translate(2px,2px); box-shadow: none; }
-  .btn:disabled { background: #aaa; border-color: #aaa; cursor: not-allowed; box-shadow: none; }
-  .btn-outline {
-    background: var(--white);
-    color: var(--black);
-    border: 2px solid var(--black);
-    box-shadow: 3px 3px 0 var(--black);
-  }
-  input, textarea {
-    background: var(--gray);
-    border: 2px solid var(--border);
-    padding: 6px 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .85rem;
-    outline: none;
-    transition: border-color .2s;
-    color: var(--black);
-  }
-  input:focus, textarea:focus { border-color: var(--black); background: var(--white); }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .78rem;
-    padding: 8px 12px;
-    text-align: left;
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-  }
-  th:hover { background: #333; }
-  th.sorted-asc::after  { content: " ↑"; }
-  th.sorted-desc::after { content: " ↓"; }
-  td {
-    padding: 7px 12px;
-    border-bottom: 1px solid var(--border);
-    font-size: .85rem;
-    font-family: 'JetBrains Mono', monospace;
-    white-space: nowrap;
-  }
-  tr:hover td { background: #fafafa; }
-  .tag {
-    display: inline-block;
-    font-size: .7rem;
-    padding: 2px 6px;
-    border: 1px solid;
-    margin: 1px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .tag-buy    { background: #d1fae5; border-color: #059669; color: #065f46; }
-  .tag-watch  { background: #fef3c7; border-color: #d97706; color: #78350f; }
-  .tag-skip   { background: #f4f4f5; border-color: #a1a1aa; color: #52525b; }
-  .tag-warn   { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
-  .tag-info   { background: #dbeafe; border-color: #2563eb; color: #1e3a8a; }
-  .tag-purple { background: #ede9fe; border-color: #7c3aed; color: #4c1d95; }
-  .badge-buy    { background: #059669; color: white; }
-  .badge-watch  { background: #d97706; color: white; }
-  .badge-skip   { background: #71717a; color: white; }
-  .badge-normal  { background: #059669; color: white; }
-  .badge-caution { background: #d97706; color: white; }
-  .badge-frozen  { background: #dc2626; color: white; }
-  .badge-unknown { background: #71717a; color: white; }
-  .decision-badge {
-    display: inline-block;
-    padding: 2px 10px;
-    font-size: .75rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-  }
-  .star { color: #f59e0b; font-size: 1rem; }
-  .spinner {
-    display: inline-block;
-    width: 16px; height: 16px;
-    border: 2px solid var(--border);
-    border-top-color: var(--black);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .score-bar-bg { background: #e4e4e7; height: 6px; border-radius: 0; }
-  .score-bar    { height: 6px; border-radius: 0; transition: width .4s; }
-  #toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--black); color: var(--white);
-    padding: 10px 18px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .85rem;
-    border: 2px solid var(--white);
-    box-shadow: 4px 4px 0 #555;
-    display: none; z-index: 999;
-  }
-  .detail-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 100; display: none;
-    align-items: center; justify-content: center;
-  }
-  .detail-box {
-    background: var(--white);
-    border: 2px solid var(--black);
-    box-shadow: 6px 6px 0 var(--black);
-    max-width: 640px; width: 95%;
-    max-height: 85vh; overflow-y: auto;
-    padding: 24px;
-  }
-  .progress-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size:.8rem; }
-  .progress-label { width: 140px; flex-shrink: 0; font-family:'JetBrains Mono',monospace; }
-  .progress-val   { width: 48px; text-align:right; flex-shrink: 0; font-family:'JetBrains Mono',monospace; }
+  .mono{font-family:'JetBrains Mono',monospace}
+  .panel{background:var(--white);border:2px solid var(--black);box-shadow:4px 4px 0 var(--black)}
+  .btn{border:2px solid var(--black);background:var(--black);color:var(--white);padding:8px 20px;
+       font-family:'JetBrains Mono',monospace;font-size:.875rem;cursor:pointer;
+       transition:transform .08s,box-shadow .08s;box-shadow:3px 3px 0 #555}
+  .btn:active{transform:translate(2px,2px);box-shadow:none}
+  .btn:disabled{background:#aaa;border-color:#aaa;cursor:not-allowed;box-shadow:none}
+  .btn-outline{background:var(--white);color:var(--black);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black)}
+  input,textarea,select{background:var(--gray);border:2px solid var(--border);padding:6px 10px;
+    font-family:'JetBrains Mono',monospace;font-size:.85rem;outline:none;transition:border-color .2s;color:var(--black)}
+  input:focus,textarea:focus,select:focus{border-color:var(--black);background:var(--white)}
+  table{width:100%;border-collapse:collapse}
+  th{background:var(--black);color:var(--white);font-family:'JetBrains Mono',monospace;
+     font-size:.78rem;padding:8px 12px;text-align:left;cursor:pointer;user-select:none;white-space:nowrap}
+  th:hover{background:#333}
+  th.sorted-asc::after{content:" ↑"} th.sorted-desc::after{content:" ↓"}
+  td{padding:7px 12px;border-bottom:1px solid var(--border);font-size:.85rem;
+     font-family:'JetBrains Mono',monospace;white-space:nowrap}
+  tr:hover td{background:#fafafa}
+  .tag{display:inline-block;font-size:.7rem;padding:2px 6px;border:1px solid;margin:1px;font-family:'JetBrains Mono',monospace}
+  .tag-buy{background:#d1fae5;border-color:#059669;color:#065f46}
+  .tag-watch{background:#fef3c7;border-color:#d97706;color:#78350f}
+  .tag-skip{background:#f4f4f5;border-color:#a1a1aa;color:#52525b}
+  .tag-warn{background:#fee2e2;border-color:#dc2626;color:#7f1d1d}
+  .tag-info{background:#dbeafe;border-color:#2563eb;color:#1e3a8a}
+  .tag-purple{background:#ede9fe;border-color:#7c3aed;color:#4c1d95}
+  .badge-buy{background:#059669;color:#fff} .badge-watch{background:#d97706;color:#fff}
+  .badge-skip{background:#71717a;color:#fff} .badge-normal{background:#059669;color:#fff}
+  .badge-caution{background:#d97706;color:#fff} .badge-frozen{background:#dc2626;color:#fff}
+  .badge-unknown{background:#71717a;color:#fff}
+  .decision-badge{display:inline-block;padding:2px 10px;font-size:.75rem;
+    font-family:'JetBrains Mono',monospace;font-weight:700}
+  .star{color:#f59e0b;font-size:1rem}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);
+    border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .score-bar-bg{background:#e4e4e7;height:6px} .score-bar{height:6px;transition:width .4s}
+  #toast{position:fixed;bottom:24px;right:24px;background:var(--black);color:var(--white);
+    padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:.85rem;
+    border:2px solid var(--white);box-shadow:4px 4px 0 #555;display:none;z-index:999}
+  .detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;
+    align-items:center;justify-content:center}
+  .detail-box{background:var(--white);border:2px solid var(--black);box-shadow:6px 6px 0 var(--black);
+    max-width:640px;width:95%;max-height:85vh;overflow-y:auto;padding:24px}
+  .progress-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:.8rem}
+  .progress-label{width:140px;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+  .progress-val{width:48px;text-align:right;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+  .log{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#666;
+    max-height:120px;overflow-y:auto;background:#fafafa;padding:8px;border:1px solid var(--border);margin-top:12px}
 </style>
 </head>
 <body>
 
-<!-- Toast -->
 <div id="toast"></div>
-
-<!-- Detail overlay -->
 <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
   <div class="detail-box" id="detailBox"></div>
 </div>
 
 <div class="max-w-7xl mx-auto px-4 py-8">
 
-  <!-- Header -->
   <div class="panel p-6 mb-6">
     <div class="flex items-start justify-between flex-wrap gap-4">
       <div>
         <h1 class="mono text-2xl font-bold">J LAW STAGE 2 SCREENER</h1>
-        <p class="text-sm text-gray-500 mt-1">週線強勢股篩選器 · 長橋數據優先</p>
+        <p class="text-sm text-gray-500 mt-1">週線強勢股篩選器 · 純瀏覽器版（Yahoo Finance）</p>
       </div>
       <div id="marketBadge" class="text-sm mono">
-        <span class="inline-block px-3 py-1 border-2 border-black">市場狀態載入中...</span>
+        <span class="inline-block px-3 py-1 border-2 border-black">未掃描</span>
       </div>
     </div>
   </div>
 
-  <!-- Settings panel -->
   <div class="panel p-5 mb-6">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
       <div>
         <label class="block text-xs mono mb-1 font-bold">BENCHMARK</label>
-        <input id="benchmark" type="text" value="SPY.US" class="w-full">
+        <input id="benchmark" type="text" value="SPY" class="w-full">
       </div>
       <div>
         <label class="block text-xs mono mb-1 font-bold">帳戶大小 ($)</label>
@@ -189,7 +103,7 @@
       </div>
       <div>
         <label class="block text-xs mono mb-1 font-bold">決策篩選</label>
-        <select id="filterDecision" class="w-full bg-gray-50 border-2 border-zinc-300 px-2 py-1 mono text-sm">
+        <select id="filterDecision" class="w-full">
           <option value="ALL">ALL</option>
           <option value="BUY_CANDIDATE">BUY_CANDIDATE</option>
           <option value="WATCH">WATCH</option>
@@ -199,8 +113,8 @@
     </div>
 
     <div class="mb-4">
-      <label class="block text-xs mono mb-1 font-bold">股票清單 (每行或空格分隔，長橋格式 e.g. AAPL.US 0700.HK)</label>
-      <textarea id="symbolsInput" rows="3" class="w-full" placeholder="留空使用預設 S&P 500 Top 50"></textarea>
+      <label class="block text-xs mono mb-1 font-bold">股票清單 (空格分隔，e.g. AAPL TSLA 0700.HK)</label>
+      <textarea id="symbolsInput" rows="3" class="w-full"></textarea>
     </div>
 
     <div class="flex gap-3 flex-wrap items-center">
@@ -210,182 +124,453 @@
       <button class="btn btn-outline" onclick="loadPreset('tech')">科技巨頭</button>
       <span id="scanStatus" class="mono text-sm text-gray-500"></span>
     </div>
+
+    <div id="logArea" class="log hidden"></div>
   </div>
 
-  <!-- Summary bar -->
   <div id="summaryBar" class="hidden panel p-4 mb-4">
     <div class="flex gap-6 flex-wrap items-center">
-      <div>
-        <span class="mono text-xs text-gray-500">掃描時間</span>
-        <div class="mono font-bold" id="sumTime"></div>
-      </div>
-      <div>
-        <span class="mono text-xs text-gray-500">BUY_CANDIDATE</span>
-        <div class="mono font-bold text-emerald-700" id="sumBuy">0</div>
-      </div>
-      <div>
-        <span class="mono text-xs text-gray-500">WATCH</span>
-        <div class="mono font-bold text-amber-700" id="sumWatch">0</div>
-      </div>
-      <div>
-        <span class="mono text-xs text-gray-500">SKIP</span>
-        <div class="mono font-bold text-zinc-500" id="sumSkip">0</div>
-      </div>
-      <div>
-        <span class="mono text-xs text-gray-500">符合買入規則 ✓</span>
-        <div class="mono font-bold text-emerald-700" id="sumBuyRules">0</div>
-      </div>
+      <div><span class="mono text-xs text-gray-500">掃描時間</span><div class="mono font-bold" id="sumTime"></div></div>
+      <div><span class="mono text-xs text-gray-500">BUY_CANDIDATE</span><div class="mono font-bold text-emerald-700" id="sumBuy">0</div></div>
+      <div><span class="mono text-xs text-gray-500">WATCH</span><div class="mono font-bold text-amber-700" id="sumWatch">0</div></div>
+      <div><span class="mono text-xs text-gray-500">SKIP</span><div class="mono font-bold text-zinc-500" id="sumSkip">0</div></div>
+      <div><span class="mono text-xs text-gray-500">符合買入規則 ✓</span><div class="mono font-bold text-emerald-700" id="sumBuyRules">0</div></div>
     </div>
   </div>
 
-  <!-- Results table -->
   <div class="panel overflow-x-auto" id="resultsPanel" style="display:none">
     <table id="resultsTable">
       <thead>
         <tr>
-          <th onclick="sortBy('symbol')">代碼</th>
-          <th onclick="sortBy('decision')">決策</th>
-          <th onclick="sortBy('score')">分數</th>
-          <th onclick="sortBy('rs_rank')">RS排名</th>
-          <th onclick="sortBy('close')">收市價</th>
-          <th onclick="sortBy('distance_52h')">距52高</th>
-          <th onclick="sortBy('stop_pct')">止損%</th>
-          <th onclick="sortBy('shares')">建議股數</th>
+          <th data-key="symbol">代碼</th>
+          <th data-key="decision">決策</th>
+          <th data-key="score">分數</th>
+          <th data-key="rs_rank">RS排名</th>
+          <th data-key="close">收市價</th>
+          <th data-key="distance_52h">距52高</th>
+          <th data-key="stop_pct">止損%</th>
+          <th data-key="shares">建議股數</th>
           <th>標籤</th>
-          <th>數據源</th>
         </tr>
       </thead>
       <tbody id="resultsBody"></tbody>
     </table>
   </div>
 
-  <div id="emptyMsg" class="hidden panel p-8 text-center mono text-gray-400">
-    冇符合條件嘅股票
-  </div>
-
-</div><!-- /container -->
+  <div id="emptyMsg" class="hidden panel p-8 text-center mono text-gray-400">冇符合條件嘅股票</div>
+</div>
 
 <script>
-// ── Presets ────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+//  Presets & State
+// ═══════════════════════════════════════════════════════════════════════════
 const PRESETS = {
-  sp500: "NVDA.US AAPL.US MSFT.US AMZN.US GOOGL.US AVGO.US META.US TSLA.US WMT.US LLY.US JPM.US MU.US AMD.US XOM.US V.US JNJ.US ORCL.US COST.US CSCO.US MA.US CAT.US CVX.US ABBV.US NFLX.US BAC.US UNH.US KO.US LRCX.US PG.US PLTR.US AMAT.US HD.US MS.US PM.US GE.US MRK.US TXN.US GS.US RTX.US LIN.US WFC.US KLAC.US AXP.US TMUS.US IBM.US QCOM.US INTC.US ADBE.US CRM.US NOW.US",
-  hk: "0700.HK 9988.HK 3690.HK 0941.HK 0005.HK 1299.HK 0388.HK 2318.HK 1810.HK 0883.HK 2269.HK 9618.HK 9999.HK 2382.HK 1024.HK",
-  tech: "NVDA.US AAPL.US MSFT.US AMZN.US GOOGL.US META.US TSLA.US AVGO.US AMD.US PLTR.US ORCL.US ADBE.US CRM.US NOW.US AMAT.US LRCX.US KLAC.US MU.US INTC.US QCOM.US",
+  sp500: "NVDA AAPL MSFT AMZN GOOGL AVGO META TSLA WMT LLY JPM MU AMD XOM V JNJ ORCL COST CSCO MA CAT CVX ABBV NFLX BAC UNH KO LRCX PG PLTR AMAT HD MS PM GE MRK TXN GS RTX LIN WFC KLAC AXP TMUS IBM QCOM INTC ADBE CRM NOW",
+  hk:    "0700.HK 9988.HK 3690.HK 0941.HK 0005.HK 1299.HK 0388.HK 2318.HK 1810.HK 0883.HK 2269.HK 9618.HK 9999.HK 2382.HK 1024.HK",
+  tech:  "NVDA AAPL MSFT AMZN GOOGL META TSLA AVGO AMD PLTR ORCL ADBE CRM NOW AMAT LRCX KLAC MU INTC QCOM",
 };
-
-function loadPreset(key) {
-  document.getElementById('symbolsInput').value = PRESETS[key];
-}
-
-// ── State ──────────────────────────────────────────────────────────────────
 let allResults = [];
-let sortKey = 'score';
-let sortDir = -1;  // -1 = desc
+let sortKey = 'score', sortDir = -1;
 
-// ── Market status ──────────────────────────────────────────────────────────
-async function loadMarket() {
-  const bm = document.getElementById('benchmark').value.trim() || 'SPY.US';
-  try {
-    const r = await fetch(`/api/market?benchmark=${encodeURIComponent(bm)}`);
-    const d = await r.json();
-    const cls = { NORMAL: 'badge-normal', CAUTION: 'badge-caution',
-                  FROZEN: 'badge-frozen', UNKNOWN: 'badge-unknown' }[d.status] || 'badge-unknown';
-    const price = d.price ? ` $${d.price.toFixed(2)}` : '';
-    document.getElementById('marketBadge').innerHTML =
-      `<span class="decision-badge ${cls} border-2 border-black">${d.benchmark}${price} — ${d.status}</span>`;
-  } catch(e) {
-    document.getElementById('marketBadge').innerHTML =
-      '<span class="mono text-sm text-red-600">市場狀態讀取失敗（Flask 未啟動？）</span>';
+function loadPreset(k) { document.getElementById('symbolsInput').value = PRESETS[k]; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Yahoo Finance via CORS proxies
+// ═══════════════════════════════════════════════════════════════════════════
+const PROXIES = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+async function fetchProxied(url) {
+  let lastErr;
+  for (const p of PROXIES) {
+    try {
+      const r = await fetch(p(url), { headers: { 'Accept': 'application/json' } });
+      if (!r.ok) { lastErr = new Error(`HTTP ${r.status}`); continue; }
+      const text = await r.text();
+      try { return JSON.parse(text); } catch(e) { lastErr = e; }
+    } catch (e) { lastErr = e; }
   }
+  throw lastErr || new Error('All proxies failed');
 }
-loadMarket();
 
-// ── Scan ───────────────────────────────────────────────────────────────────
-async function startScan() {
-  const btn  = document.getElementById('scanBtn');
-  const stat = document.getElementById('scanStatus');
-  btn.disabled = true;
-  btn.textContent = '掃描中...';
-  stat.innerHTML = '<span class="spinner"></span> 緊係要等，數據緊緊拉...';
-
-  const rawSyms = document.getElementById('symbolsInput').value.trim();
-  const symbols  = rawSyms ? rawSyms.split(/[\s,]+/).filter(Boolean) : [];
-  const body = {
-    symbols:       symbols.length ? symbols : undefined,
-    benchmark:     document.getElementById('benchmark').value.trim() || 'SPY.US',
-    account_size:  parseFloat(document.getElementById('accountSize').value) || 100000,
-    risk_per_trade: parseFloat(document.getElementById('riskPct').value) / 100 || 0.005,
-  };
-
-  try {
-    const t0 = Date.now();
-    const resp = await fetch('/api/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+async function fetchWeeklyCandles(ticker) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1wk&range=6y`;
+  const data = await fetchProxied(url);
+  const r = data?.chart?.result?.[0];
+  if (!r) throw new Error('No data');
+  const ts = r.timestamp || [];
+  const q  = r.indicators?.quote?.[0] || {};
+  const adj = r.indicators?.adjclose?.[0]?.adjclose || q.close || [];
+  const out = [];
+  for (let i = 0; i < ts.length; i++) {
+    const o=q.open?.[i], h=q.high?.[i], l=q.low?.[i], c=adj?.[i] ?? q.close?.[i], v=q.volume?.[i];
+    if (o == null || h == null || l == null || c == null) continue;
+    out.push({
+      timestamp: new Date(ts[i]*1000).toISOString().slice(0,10),
+      open: o, high: h, low: l, close: c, volume: v || 0,
     });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    const elapsed = ((Date.now() - t0)/1000).toFixed(1);
+  }
+  return out;
+}
 
-    allResults = data.results;
-    renderTable();
-    renderSummary(data.results, data.market_status, elapsed);
-    await loadMarket();
-    toast('掃描完成！');
-  } catch(e) {
-    stat.textContent = '錯誤: ' + e.message;
-    toast('掃描失敗: ' + e.message, true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '▶ 開始掃描';
-    stat.textContent = '';
+async function fetchEarningsDate(ticker) {
+  try {
+    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=calendarEvents`;
+    const d = await fetchProxied(url);
+    const ev = d?.quoteSummary?.result?.[0]?.calendarEvents?.earnings?.earningsDate?.[0]?.raw;
+    if (!ev) return null;
+    return new Date(ev * 1000);
+  } catch { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Math helpers
+// ═══════════════════════════════════════════════════════════════════════════
+const _c = a => a.map(x=>x.close);
+const _h = a => a.map(x=>x.high);
+const _l = a => a.map(x=>x.low);
+const _v = a => a.map(x=>x.volume);
+const _o = a => a.map(x=>x.open);
+
+function sma(vals, n) {
+  if (vals.length < n) return null;
+  let s = 0; for (let i = vals.length - n; i < vals.length; i++) s += vals[i];
+  return s / n;
+}
+function isRising(vals, lb = 4) {
+  if (vals.length < lb + 1) return false;
+  return vals[vals.length-1] > vals[vals.length-1-lb];
+}
+function maxN(arr, n) { return Math.max(...arr.slice(-n)); }
+function minN(arr, n) { return Math.min(...arr.slice(-n)); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Core analysis (port of jlaw_screener.py)
+// ═══════════════════════════════════════════════════════════════════════════
+function analyse(symbol, candles, benchCandles, accountSize, riskPct, earningsDate) {
+  const base = {
+    symbol, decision: 'SKIP', score: 0, tags: [], score_breakdown: [],
+    close: null, stop: null, stop_pct: null, shares: null,
+    buy_rules_match: false, earnings_window: false,
+    rs_score: null, rs_rank: null, rs_rank_total: null,
+    ma10: null, ma20: null, ma50: null, ma200: null,
+    distance_52h: null, vol_ratio: null, error: null,
+  };
+  if (!candles || candles.length < 80) {
+    base.error = 'insufficient_data';
+    base.tags.push('insufficient_data');
+    return base;
+  }
+
+  const c = _c(candles), h = _h(candles), l = _l(candles),
+        v = _v(candles), o = _o(candles);
+  const price = c[c.length-1];
+
+  const ma10  = sma(c, 10);
+  const ma20  = sma(c, 20);
+  const ma50  = c.length >= 50  ? sma(c, 50)  : null;
+  const ma200 = c.length >= 200 ? sma(c, 200) : null;
+
+  base.close = +price.toFixed(2);
+  base.ma10 = ma10  ? +ma10.toFixed(2)  : null;
+  base.ma20 = ma20  ? +ma20.toFixed(2)  : null;
+  base.ma50 = ma50  ? +ma50.toFixed(2)  : null;
+  base.ma200= ma200 ? +ma200.toFixed(2) : null;
+
+  const h52 = h.length >= 52 ? maxN(h, 52) : Math.max(...h);
+  const l52 = l.length >= 52 ? minN(l, 52) : Math.min(...l);
+  base.distance_52h = +(((price / h52) - 1) * 100).toFixed(1);
+
+  let score = 0;
+  const tags = base.tags, bd = base.score_breakdown;
+
+  // ── Stage 2 ────────────────────────────────────────────────────────────
+  let stage2 = false;
+  if (ma50 && ma200 && c.length >= 54) {
+    const ma50_prev = sma(c.slice(0, c.length - 4), 50);
+    const ma50_rising = ma50_prev != null && ma50 > ma50_prev;
+    stage2 = price > ma50 && ma50 > ma200
+          && ma50_rising
+          && price >= h52 * 0.75
+          && price >= l52 * 1.25;
+  }
+  if (stage2) { score += 25; tags.push('stage2'); bd.push(['Stage 2', 25]); }
+
+  // ── MA Stack ───────────────────────────────────────────────────────────
+  const ma_stack = ma10 && ma20 && ma50 && ma200
+                 && price > ma10 && ma10 > ma20 && ma20 > ma50 && ma50 > ma200;
+  if (ma_stack) { score += 15; tags.push('ma_stack'); bd.push(['MA Stack', 15]); }
+
+  // ── RS Score ───────────────────────────────────────────────────────────
+  const bc = _c(benchCandles || []);
+  let rs_score = null;
+  if (bc.length >= 52 && c.length >= 52) {
+    const ret = (s, n) => s.length >= n ? s[s.length-1]/s[s.length-n] - 1 : 0;
+    rs_score = +(
+      ((ret(c,13) - ret(bc,13)) * 0.5
+     + (ret(c,26) - ret(bc,26)) * 0.3
+     + (ret(c,52) - ret(bc,52)) * 0.2) * 100
+    ).toFixed(2);
+    base.rs_score = rs_score;
+  }
+  const rs_beats = rs_score != null && rs_score > 0;
+  if (rs_beats) { score += 20; tags.push('rs_leader'); bd.push(['RS Leader', 20]); }
+
+  // ── Volume ─────────────────────────────────────────────────────────────
+  let vol_ratio = null;
+  if (v.length >= 20) {
+    const avg20 = sma(v, 20);
+    if (avg20 && avg20 > 0) vol_ratio = v[v.length-1] / avg20;
+  }
+  base.vol_ratio = vol_ratio ? +vol_ratio.toFixed(2) : null;
+  const vol_confirmed = vol_ratio != null && vol_ratio >= 1.5;
+  if (vol_confirmed) { score += 10; tags.push('volume_confirmed'); bd.push(['Volume', 10]); }
+
+  // ── Breakout ───────────────────────────────────────────────────────────
+  let breakout = false, stop = null;
+  if (h.length >= 14 && vol_confirmed) {
+    const h13 = Math.max(...h.slice(-14, -1));
+    if (price > h13 * 1.005) { breakout = true; stop = h13 * 0.97; }
+  }
+  if (breakout) { score += 20; tags.push('breakout'); bd.push(['Breakout', 20]); }
+
+  // ── Pullback ───────────────────────────────────────────────────────────
+  let pullback = false;
+  if (stage2 && !breakout) {
+    const near20 = ma20 && Math.abs(price - ma20)/ma20 <= 0.035 && c[c.length-1] > o[o.length-1];
+    const near50 = ma50 && Math.abs(price - ma50)/ma50 <= 0.040 && c[c.length-1] > o[o.length-1];
+    pullback = near20 || near50;
+  }
+  if (pullback) {
+    score += 15; tags.push('pullback'); bd.push(['Pullback', 15]);
+    const cands = [];
+    if (ma20) cands.push(ma20 * 0.97);
+    if (ma50) cands.push(ma50 * 0.98);
+    const valid = cands.filter(s => s < price);
+    stop = valid.length ? Math.max(...valid) : price * 0.92;
+  }
+
+  if (stop == null) stop = ma50 ? ma50 * 0.98 : price * 0.92;
+
+  // ── Bullish Candle ─────────────────────────────────────────────────────
+  if (c[c.length-1] > o[o.length-1] && (c[c.length-1]/o[o.length-1] - 1) >= 0.02) {
+    score += 5; tags.push('bullish_candle'); bd.push(['Bullish Candle', 5]);
+  }
+
+  // ── Distribution Warning ────────────────────────────────────────────────
+  if (c[c.length-1] < o[o.length-1] && (o[o.length-1]/c[c.length-1] - 1) >= 0.03 && vol_confirmed) {
+    score -= 25; tags.push('distribution_warning'); bd.push(['Distribution', -25]);
+  }
+
+  // ── VCP-like ───────────────────────────────────────────────────────────
+  if (h.length >= 13 && l.length >= 13) {
+    const rng = (a, b) => { let s=0, n=0; for (let i=a;i<b;i++){ s+=h[i]-l[i]; n++; } return n?s/n:0; };
+    const n = h.length;
+    const r3 = rng(n-3, n), r8 = rng(n-8, n-3), r13 = rng(n-13, n-8);
+    if (r3 < r8 && r8 < r13) { score += 5; tags.push('vcp_like'); bd.push(['VCP-like', 5]); }
+  }
+
+  // ── Earnings Window ─────────────────────────────────────────────────────
+  if (earningsDate) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diffDays = Math.round((earningsDate - today) / 86400000);
+    if (diffDays >= -2 && diffDays <= 10) {
+      base.earnings_window = true;
+      score -= 20; tags.push('earnings_window'); bd.push(['Earnings Window', -20]);
+    }
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  base.score = score;
+
+  const stop_pct = (price - stop) / price * 100;
+  base.stop     = +stop.toFixed(2);
+  base.stop_pct = +stop_pct.toFixed(1);
+
+  if (stop < price) {
+    const risk_amt = accountSize * riskPct;
+    const rps = price - stop;
+    let shares = Math.floor(risk_amt / rps);
+    const cap  = Math.floor(accountSize * 0.10 / price);
+    if (shares > cap) { tags.push('position_cap'); shares = cap; }
+    base.shares = shares;
+  }
+
+  if (stage2 && (breakout || pullback) && rs_beats && score >= 65 && !base.earnings_window) {
+    base.decision = 'BUY_CANDIDATE';
+  } else if (stage2 && score >= 45) {
+    base.decision = 'WATCH';
+  } else {
+    base.decision = 'SKIP';
+  }
+
+  return base;
+}
+
+function fillRsRanks(results) {
+  const ranked = results.filter(r => r.rs_score != null)
+                        .sort((a,b) => b.rs_score - a.rs_score);
+  const n = ranked.length;
+  ranked.forEach((r, i) => { r.rs_rank = i + 1; r.rs_rank_total = n; });
+}
+
+function applyMarketStatus(results, mstatus) {
+  for (const r of results) {
+    if (mstatus === 'FROZEN' && r.decision === 'BUY_CANDIDATE') {
+      r.decision = 'WATCH'; r.tags.push('market_frozen');
+    } else if (mstatus === 'CAUTION' && r.decision === 'BUY_CANDIDATE') {
+      r.decision = 'WATCH'; r.tags.push('market_caution');
+    }
   }
 }
 
-// ── Render summary ─────────────────────────────────────────────────────────
-function renderSummary(results, mstatus, elapsed) {
-  const buy   = results.filter(r => r.decision === 'BUY_CANDIDATE').length;
-  const watch = results.filter(r => r.decision === 'WATCH').length;
-  const skip  = results.filter(r => r.decision === 'SKIP').length;
-  const rules = results.filter(r => r.buy_rules_match).length;
+function markBuyRules(results, mstatus) {
+  for (const r of results) {
+    if (r.score >= 80
+        && r.rs_rank != null && r.rs_rank <= 10
+        && r.tags.includes('stage2')
+        && !r.earnings_window
+        && mstatus === 'NORMAL'
+        && r.distance_52h != null && r.distance_52h >= -15
+        && r.stop_pct != null && r.stop_pct <= 12) {
+      r.buy_rules_match = true;
+    }
+  }
+}
+
+function marketStatus(benchCandles) {
+  if (!benchCandles || benchCandles.length < 210) return 'UNKNOWN';
+  const c = _c(benchCandles);
+  const price = c[c.length-1];
+  const ma200 = sma(c, 200);
+  const ma50  = sma(c, 50);
+  if (!ma200 || !ma50) return 'UNKNOWN';
+  if (price > ma200 && price > ma50 && isRising(c, 4)) return 'NORMAL';
+  if (price < ma200) return 'FROZEN';
+  return 'CAUTION';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Scan loop
+// ═══════════════════════════════════════════════════════════════════════════
+function logLine(msg) {
+  const el = document.getElementById('logArea');
+  el.classList.remove('hidden');
+  el.textContent += msg + '\n';
+  el.scrollTop = el.scrollHeight;
+}
+
+async function startScan() {
+  const btn = document.getElementById('scanBtn');
+  const stat = document.getElementById('scanStatus');
+  btn.disabled = true; btn.textContent = '掃描中...';
+  document.getElementById('logArea').textContent = '';
+
+  const rawSyms  = document.getElementById('symbolsInput').value.trim();
+  const symbols  = rawSyms ? rawSyms.split(/[\s,]+/).filter(Boolean) : PRESETS.sp500.split(/\s+/);
+  const benchmark    = document.getElementById('benchmark').value.trim() || 'SPY';
+  const accountSize  = parseFloat(document.getElementById('accountSize').value) || 100000;
+  const riskPct      = (parseFloat(document.getElementById('riskPct').value) || 0.5) / 100;
+
+  const t0 = Date.now();
+  let mstatus = 'UNKNOWN';
+  let benchCandles = null;
+
+  try {
+    stat.innerHTML = '<span class="spinner"></span> 拉 benchmark...';
+    logLine(`[*] Benchmark: ${benchmark}`);
+    benchCandles = await fetchWeeklyCandles(benchmark);
+    mstatus = marketStatus(benchCandles);
+    logLine(`[*] Market status: ${mstatus} (${benchCandles.length} weeks)`);
+    updateMarketBadge(benchmark, mstatus, benchCandles[benchCandles.length-1]?.close);
+  } catch (e) {
+    logLine(`[!] Benchmark fetch failed: ${e.message}`);
+    toast('Benchmark 失敗: ' + e.message, true);
+    btn.disabled = false; btn.textContent = '▶ 開始掃描'; stat.textContent = '';
+    return;
+  }
+
+  // Fetch all symbols in parallel batches
+  const BATCH = 5;
+  const results = [];
+  for (let i = 0; i < symbols.length; i += BATCH) {
+    const batch = symbols.slice(i, i + BATCH);
+    stat.innerHTML = `<span class="spinner"></span> 掃描 ${i + 1}-${Math.min(i+BATCH, symbols.length)} / ${symbols.length}...`;
+    const batchResults = await Promise.all(batch.map(async sym => {
+      try {
+        const [candles, earn] = await Promise.all([
+          fetchWeeklyCandles(sym),
+          fetchEarningsDate(sym),
+        ]);
+        const r = analyse(sym, candles, benchCandles, accountSize, riskPct, earn);
+        logLine(`  ${sym}: ${r.decision} (score ${r.score})`);
+        return r;
+      } catch (e) {
+        logLine(`  ${sym}: error ${e.message}`);
+        return { symbol: sym, decision: 'SKIP', score: 0, tags: ['fetch_error'],
+                 error: e.message, score_breakdown: [],
+                 close: null, stop: null, stop_pct: null, shares: null,
+                 buy_rules_match: false, earnings_window: false,
+                 rs_score: null, rs_rank: null, distance_52h: null };
+      }
+    }));
+    results.push(...batchResults);
+  }
+
+  fillRsRanks(results);
+  applyMarketStatus(results, mstatus);
+  markBuyRules(results, mstatus);
+
+  allResults = results;
+  const elapsed = ((Date.now() - t0)/1000).toFixed(1);
+  renderTable();
+  renderSummary(results, elapsed);
+  logLine(`[*] Done in ${elapsed}s`);
+  toast(`完成！${results.length} 隻股票`);
+
+  btn.disabled = false; btn.textContent = '▶ 開始掃描'; stat.textContent = '';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Rendering
+// ═══════════════════════════════════════════════════════════════════════════
+function updateMarketBadge(bm, status, price) {
+  const cls = { NORMAL:'badge-normal', CAUTION:'badge-caution',
+                FROZEN:'badge-frozen', UNKNOWN:'badge-unknown' }[status] || 'badge-unknown';
+  const p = price ? ` $${price.toFixed(2)}` : '';
+  document.getElementById('marketBadge').innerHTML =
+    `<span class="decision-badge ${cls} border-2 border-black">${bm}${p} — ${status}</span>`;
+}
+
+function renderSummary(results, elapsed) {
   document.getElementById('sumTime').textContent  = elapsed + 's';
-  document.getElementById('sumBuy').textContent   = buy;
-  document.getElementById('sumWatch').textContent = watch;
-  document.getElementById('sumSkip').textContent  = skip;
-  document.getElementById('sumBuyRules').textContent = rules;
+  document.getElementById('sumBuy').textContent   = results.filter(r=>r.decision==='BUY_CANDIDATE').length;
+  document.getElementById('sumWatch').textContent = results.filter(r=>r.decision==='WATCH').length;
+  document.getElementById('sumSkip').textContent  = results.filter(r=>r.decision==='SKIP').length;
+  document.getElementById('sumBuyRules').textContent = results.filter(r=>r.buy_rules_match).length;
   document.getElementById('summaryBar').classList.remove('hidden');
 }
 
-// ── Sort ───────────────────────────────────────────────────────────────────
-function sortBy(key) {
-  if (sortKey === key) { sortDir = -sortDir; }
-  else { sortKey = key; sortDir = -1; }
-  renderTable();
-}
-
 function getVal(r, k) {
-  if (k === 'decision') { const m = {BUY_CANDIDATE:3,WATCH:2,SKIP:1}; return m[r.decision]||0; }
+  if (k === 'decision') return ({BUY_CANDIDATE:3,WATCH:2,SKIP:1})[r.decision] || 0;
   return r[k] ?? -999;
 }
 
-// ── Render table ───────────────────────────────────────────────────────────
 function renderTable() {
-  const filter  = document.getElementById('filterDecision').value;
-  const rows    = allResults.filter(r => filter === 'ALL' || r.decision === filter);
-  const sorted  = [...rows].sort((a,b) => sortDir * (getVal(a,sortKey) - getVal(b,sortKey)));
+  const filter = document.getElementById('filterDecision').value;
+  const rows = allResults.filter(r => filter === 'ALL' || r.decision === filter);
+  const sorted = [...rows].sort((a,b) => sortDir * (getVal(a,sortKey) - getVal(b,sortKey)));
 
-  // Update sort indicators
-  document.querySelectorAll('th').forEach(th => {
+  document.querySelectorAll('th[data-key]').forEach(th => {
     th.classList.remove('sorted-asc','sorted-desc');
-    if (th.textContent.replace(/ [↑↓]/,'') === thLabel(sortKey)) {
-      th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
-    }
+    if (th.dataset.key === sortKey) th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
   });
 
   const tbody = document.getElementById('resultsBody');
   tbody.innerHTML = '';
-
   document.getElementById('resultsPanel').style.display = sorted.length ? 'block' : 'none';
   document.getElementById('emptyMsg').classList.toggle('hidden', sorted.length > 0);
 
@@ -395,17 +580,14 @@ function renderTable() {
     tr.onclick = () => openDetail(r);
 
     const decCls = { BUY_CANDIDATE:'badge-buy', WATCH:'badge-watch', SKIP:'badge-skip' }[r.decision]||'badge-skip';
-    const star   = r.buy_rules_match ? '<span class="star">★</span> ' : '';
-    const rk     = r.rs_rank ? `#${r.rs_rank}/${r.rs_rank_total}` : '—';
-    const tags   = buildTags(r.tags);
+    const star = r.buy_rules_match ? '<span class="star">★</span> ' : '';
+    const rk = r.rs_rank ? `#${r.rs_rank}/${r.rs_rank_total}` : '—';
+    const tags = buildTags(r.tags);
     const scoreColor = r.score >= 80 ? '#059669' : r.score >= 65 ? '#d97706' : r.score >= 45 ? '#2563eb' : '#71717a';
     const dist52 = r.distance_52h != null ? `${r.distance_52h}%` : '—';
-    const stopp  = r.stop_pct   != null ? `${r.stop_pct}%` : '—';
-    const close  = r.close      != null ? `$${r.close.toFixed(2)}` : '—';
-    const shs    = r.shares     != null ? r.shares : '—';
-    const src    = r.source === 'Longbridge' ?
-      '<span class="tag tag-buy">長橋</span>' :
-      '<span class="tag tag-skip">yfinance</span>';
+    const stopp  = r.stop_pct != null ? `${r.stop_pct}%` : '—';
+    const close  = r.close != null ? `$${r.close.toFixed(2)}` : '—';
+    const shs    = r.shares != null ? r.shares : '—';
 
     tr.innerHTML = `
       <td class="font-bold">${star}${r.symbol}</td>
@@ -423,73 +605,42 @@ function renderTable() {
       <td style="color:${r.distance_52h >= -5 ? '#059669' : r.distance_52h >= -15 ? '#d97706' : '#dc2626'}">${dist52}</td>
       <td style="color:${r.stop_pct <= 8 ? '#059669' : r.stop_pct <= 12 ? '#d97706' : '#dc2626'}">${stopp}</td>
       <td>${shs}</td>
-      <td style="max-width:260px;white-space:normal">${tags}</td>
-      <td>${src}</td>
+      <td style="max-width:280px;white-space:normal">${tags}</td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-function thLabel(k) {
-  const m = { symbol:'代碼', decision:'決策', score:'分數', rs_rank:'RS排名',
-              close:'收市價', distance_52h:'距52高', stop_pct:'止損%', shares:'建議股數' };
-  return m[k] || k;
-}
-
-// ── Tags ───────────────────────────────────────────────────────────────────
 const TAG_STYLE = {
-  buy_rules_match:    'tag-buy',
-  stage2:             'tag-buy',
-  ma_stack:           'tag-buy',
-  rs_leader:          'tag-buy',
-  breakout:           'tag-buy',
-  pullback:           'tag-buy',
-  volume_confirmed:   'tag-info',
-  bullish_candle:     'tag-info',
-  vcp_like:           'tag-purple',
-  distribution_warning: 'tag-warn',
-  earnings_window:    'tag-warn',
-  market_frozen:      'tag-warn',
-  market_caution:     'tag-warn',
-  unprofitable:       'tag-warn',
-  position_cap:       'tag-watch',
-  insufficient_data:  'tag-skip',
+  buy_rules_match:'tag-buy', stage2:'tag-buy', ma_stack:'tag-buy',
+  rs_leader:'tag-buy', breakout:'tag-buy', pullback:'tag-buy',
+  volume_confirmed:'tag-info', bullish_candle:'tag-info', vcp_like:'tag-purple',
+  distribution_warning:'tag-warn', earnings_window:'tag-warn',
+  market_frozen:'tag-warn', market_caution:'tag-warn',
+  position_cap:'tag-watch', insufficient_data:'tag-skip', fetch_error:'tag-warn',
 };
-
 const TAG_LABEL = {
-  buy_rules_match: '✓ 買入規則',
-  stage2: 'S2',
-  ma_stack: 'MA排列',
-  rs_leader: 'RS強',
-  breakout: '突破',
-  pullback: '拉回',
-  volume_confirmed: '量確認',
-  bullish_candle: '陽燭',
-  vcp_like: 'VCP型',
-  distribution_warning: '⚠ 派貨',
-  earnings_window: '⚠ 業績期',
-  market_frozen: '⛔ 市凍',
-  market_caution: '⚠ 市警',
-  unprofitable: '⚠ 虧損',
-  position_cap: '10%上限',
-  insufficient_data: '數據不足',
+  stage2:'S2', ma_stack:'MA排列', rs_leader:'RS強', breakout:'突破', pullback:'拉回',
+  volume_confirmed:'量確認', bullish_candle:'陽燭', vcp_like:'VCP型',
+  distribution_warning:'⚠ 派貨', earnings_window:'⚠ 業績期',
+  market_frozen:'⛔ 市凍', market_caution:'⚠ 市警',
+  position_cap:'10%上限', insufficient_data:'數據不足', fetch_error:'⚠ 讀取失敗',
 };
 
 function buildTags(tags) {
-  return tags.filter(t => t !== 'stage2' || true).map(t => {
+  return tags.map(t => {
     const cls = TAG_STYLE[t] || 'tag-skip';
     const lbl = TAG_LABEL[t] || t;
     return `<span class="tag ${cls}">${lbl}</span>`;
   }).join('');
 }
 
-// ── Detail ─────────────────────────────────────────────────────────────────
 function openDetail(r) {
   const box = document.getElementById('detailBox');
-  const rk  = r.rs_rank ? `#${r.rs_rank} / ${r.rs_rank_total}` : '—';
+  const rk = r.rs_rank ? `#${r.rs_rank} / ${r.rs_rank_total}` : '—';
   const decCls = { BUY_CANDIDATE:'badge-buy', WATCH:'badge-watch', SKIP:'badge-skip' }[r.decision]||'badge-skip';
 
-  const bdHtml = (r.score_breakdown || []).map(([label, pts]) => {
+  const bdHtml = (r.score_breakdown||[]).map(([label, pts]) => {
     const col = pts > 0 ? '#059669' : '#dc2626';
     const w   = Math.abs(pts) / 25 * 100;
     return `<div class="progress-row">
@@ -513,7 +664,6 @@ function openDetail(r) {
       </div>
       <button onclick="closeDetail()" class="mono text-xl font-bold px-2 hover:bg-zinc-100">✕</button>
     </div>
-
     <div class="grid grid-cols-2 gap-4 mb-5">
       <div class="border border-zinc-200 p-3">
         <div class="text-xs text-zinc-500 mono mb-2">價格 & 均線</div>
@@ -537,24 +687,19 @@ function openDetail(r) {
           <tr><td class="py-1 pr-4 text-zinc-500">RS排名</td><td>${rk}</td></tr>
           <tr><td class="py-1 pr-4 text-zinc-500">RS分</td><td>${r.rs_score != null ? r.rs_score+'%' : '—'}</td></tr>
           <tr><td class="py-1 pr-4 text-zinc-500">成交量比</td><td>${r.vol_ratio != null ? r.vol_ratio.toFixed(2)+'x' : '—'}</td></tr>
-          ${r.fundamental?.pe ? `<tr><td class="py-1 pr-4 text-zinc-500">PE</td><td>${r.fundamental.pe}</td></tr>` : ''}
         </table>
       </div>
     </div>
-
     <div class="border border-zinc-200 p-3 mb-4">
       <div class="text-xs text-zinc-500 mono mb-3">分數拆解 (總分 ${r.score}/100)</div>
       ${bdHtml || '<p class="text-zinc-400 text-sm">無數據</p>'}
     </div>
-
     <div class="mb-4">
       <div class="text-xs text-zinc-500 mono mb-2">標籤</div>
       ${buildTags(r.tags)}
     </div>
-
-    <div class="text-xs text-zinc-400 mono">數據源: ${r.source} · ${r.error || '正常'}</div>
+    <div class="text-xs text-zinc-400 mono">數據源: Yahoo Finance · ${r.error || '正常'}</div>
   `;
-
   document.getElementById('detailOverlay').style.display = 'flex';
 }
 
@@ -564,7 +709,6 @@ function closeDetail(e) {
   }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 function toast(msg, err = false) {
   const el = document.getElementById('toast');
   el.textContent = msg;
@@ -573,8 +717,19 @@ function toast(msg, err = false) {
   setTimeout(() => { el.style.display = 'none'; }, 3000);
 }
 
-// filter change
+// ── Event handlers ─────────────────────────────────────────────────────────
 document.getElementById('filterDecision').addEventListener('change', renderTable);
+document.querySelectorAll('th[data-key]').forEach(th => {
+  th.addEventListener('click', () => {
+    const k = th.dataset.key;
+    if (sortKey === k) sortDir = -sortDir;
+    else { sortKey = k; sortDir = -1; }
+    renderTable();
+  });
+});
+
+// 預設載入 S&P 500
+loadPreset('sp500');
 </script>
 </body>
 </html>
