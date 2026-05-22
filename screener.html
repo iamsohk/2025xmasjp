@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J Law Stage 2 選股器</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+HK:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --black: #18181b; --white: #ffffff; --gray: #f4f4f5; --border: #d4d4d8; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans HK', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    background-image: linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .panel {
+    background: var(--white);
+    border: 2px solid var(--black);
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .btn {
+    border: 2px solid var(--black);
+    background: var(--black);
+    color: var(--white);
+    padding: 8px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .875rem;
+    cursor: pointer;
+    transition: transform .08s, box-shadow .08s;
+    box-shadow: 3px 3px 0 #555;
+  }
+  .btn:active { transform: translate(2px,2px); box-shadow: none; }
+  .btn:disabled { background: #aaa; border-color: #aaa; cursor: not-allowed; box-shadow: none; }
+  .btn-outline {
+    background: var(--white);
+    color: var(--black);
+    border: 2px solid var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+  }
+  input, textarea {
+    background: var(--gray);
+    border: 2px solid var(--border);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    outline: none;
+    transition: border-color .2s;
+    color: var(--black);
+  }
+  input:focus, textarea:focus { border-color: var(--black); background: var(--white); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem;
+    padding: 8px 12px;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  th:hover { background: #333; }
+  th.sorted-asc::after  { content: " ↑"; }
+  th.sorted-desc::after { content: " ↓"; }
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: .85rem;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  tr:hover td { background: #fafafa; }
+  .tag {
+    display: inline-block;
+    font-size: .7rem;
+    padding: 2px 6px;
+    border: 1px solid;
+    margin: 1px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tag-buy    { background: #d1fae5; border-color: #059669; color: #065f46; }
+  .tag-watch  { background: #fef3c7; border-color: #d97706; color: #78350f; }
+  .tag-skip   { background: #f4f4f5; border-color: #a1a1aa; color: #52525b; }
+  .tag-warn   { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+  .tag-info   { background: #dbeafe; border-color: #2563eb; color: #1e3a8a; }
+  .tag-purple { background: #ede9fe; border-color: #7c3aed; color: #4c1d95; }
+  .badge-buy    { background: #059669; color: white; }
+  .badge-watch  { background: #d97706; color: white; }
+  .badge-skip   { background: #71717a; color: white; }
+  .badge-normal  { background: #059669; color: white; }
+  .badge-caution { background: #d97706; color: white; }
+  .badge-frozen  { background: #dc2626; color: white; }
+  .badge-unknown { background: #71717a; color: white; }
+  .decision-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: .75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+  .star { color: #f59e0b; font-size: 1rem; }
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--black);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .score-bar-bg { background: #e4e4e7; height: 6px; border-radius: 0; }
+  .score-bar    { height: 6px; border-radius: 0; transition: width .4s; }
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--black); color: var(--white);
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem;
+    border: 2px solid var(--white);
+    box-shadow: 4px 4px 0 #555;
+    display: none; z-index: 999;
+  }
+  .detail-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 100; display: none;
+    align-items: center; justify-content: center;
+  }
+  .detail-box {
+    background: var(--white);
+    border: 2px solid var(--black);
+    box-shadow: 6px 6px 0 var(--black);
+    max-width: 640px; width: 95%;
+    max-height: 85vh; overflow-y: auto;
+    padding: 24px;
+  }
+  .progress-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size:.8rem; }
+  .progress-label { width: 140px; flex-shrink: 0; font-family:'JetBrains Mono',monospace; }
+  .progress-val   { width: 48px; text-align:right; flex-shrink: 0; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Detail overlay -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-box" id="detailBox"></div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- Header -->
+  <div class="panel p-6 mb-6">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="mono text-2xl font-bold">J LAW STAGE 2 SCREENER</h1>
+        <p class="text-sm text-gray-500 mt-1">週線強勢股篩選器 · 長橋數據優先</p>
+      </div>
+      <div id="marketBadge" class="text-sm mono">
+        <span class="inline-block px-3 py-1 border-2 border-black">市場狀態載入中...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings panel -->
+  <div class="panel p-5 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <div>
+        <label class="block text-xs mono mb-1 font-bold">BENCHMARK</label>
+        <input id="benchmark" type="text" value="SPY.US" class="w-full">
+      </div>
+      <div>
+        <label class="block text-xs mono mb-1 font-bold">帳戶大小 ($)</label>
+        <input id="accountSize" type="number" value="100000" class="w-full">
+      </div>
+      <div>
+        <label class="block text-xs mono mb-1 font-bold">每筆風險 (%)</label>
+        <input id="riskPct" type="number" value="0.5" step="0.1" class="w-full">
+      </div>
+      <div>
+        <label class="block text-xs mono mb-1 font-bold">決策篩選</label>
+        <select id="filterDecision" class="w-full bg-gray-50 border-2 border-zinc-300 px-2 py-1 mono text-sm">
+          <option value="ALL">ALL</option>
+          <option value="BUY_CANDIDATE">BUY_CANDIDATE</option>
+          <option value="WATCH">WATCH</option>
+          <option value="SKIP">SKIP</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-xs mono mb-1 font-bold">股票清單 (每行或空格分隔，長橋格式 e.g. AAPL.US 0700.HK)</label>
+      <textarea id="symbolsInput" rows="3" class="w-full" placeholder="留空使用預設 S&P 500 Top 50"></textarea>
+    </div>
+
+    <div class="flex gap-3 flex-wrap items-center">
+      <button class="btn" id="scanBtn" onclick="startScan()">▶ 開始掃描</button>
+      <button class="btn btn-outline" onclick="loadPreset('sp500')">S&P 500 Top 50</button>
+      <button class="btn btn-outline" onclick="loadPreset('hk')">港股藍籌</button>
+      <button class="btn btn-outline" onclick="loadPreset('tech')">科技巨頭</button>
+      <span id="scanStatus" class="mono text-sm text-gray-500"></span>
+    </div>
+  </div>
+
+  <!-- Summary bar -->
+  <div id="summaryBar" class="hidden panel p-4 mb-4">
+    <div class="flex gap-6 flex-wrap items-center">
+      <div>
+        <span class="mono text-xs text-gray-500">掃描時間</span>
+        <div class="mono font-bold" id="sumTime"></div>
+      </div>
+      <div>
+        <span class="mono text-xs text-gray-500">BUY_CANDIDATE</span>
+        <div class="mono font-bold text-emerald-700" id="sumBuy">0</div>
+      </div>
+      <div>
+        <span class="mono text-xs text-gray-500">WATCH</span>
+        <div class="mono font-bold text-amber-700" id="sumWatch">0</div>
+      </div>
+      <div>
+        <span class="mono text-xs text-gray-500">SKIP</span>
+        <div class="mono font-bold text-zinc-500" id="sumSkip">0</div>
+      </div>
+      <div>
+        <span class="mono text-xs text-gray-500">符合買入規則 ✓</span>
+        <div class="mono font-bold text-emerald-700" id="sumBuyRules">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results table -->
+  <div class="panel overflow-x-auto" id="resultsPanel" style="display:none">
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th onclick="sortBy('symbol')">代碼</th>
+          <th onclick="sortBy('decision')">決策</th>
+          <th onclick="sortBy('score')">分數</th>
+          <th onclick="sortBy('rs_rank')">RS排名</th>
+          <th onclick="sortBy('close')">收市價</th>
+          <th onclick="sortBy('distance_52h')">距52高</th>
+          <th onclick="sortBy('stop_pct')">止損%</th>
+          <th onclick="sortBy('shares')">建議股數</th>
+          <th>標籤</th>
+          <th>數據源</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+
+  <div id="emptyMsg" class="hidden panel p-8 text-center mono text-gray-400">
+    冇符合條件嘅股票
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── Presets ────────────────────────────────────────────────────────────────
+const PRESETS = {
+  sp500: "NVDA.US AAPL.US MSFT.US AMZN.US GOOGL.US AVGO.US META.US TSLA.US WMT.US LLY.US JPM.US MU.US AMD.US XOM.US V.US JNJ.US ORCL.US COST.US CSCO.US MA.US CAT.US CVX.US ABBV.US NFLX.US BAC.US UNH.US KO.US LRCX.US PG.US PLTR.US AMAT.US HD.US MS.US PM.US GE.US MRK.US TXN.US GS.US RTX.US LIN.US WFC.US KLAC.US AXP.US TMUS.US IBM.US QCOM.US INTC.US ADBE.US CRM.US NOW.US",
+  hk: "0700.HK 9988.HK 3690.HK 0941.HK 0005.HK 1299.HK 0388.HK 2318.HK 1810.HK 0883.HK 2269.HK 9618.HK 9999.HK 2382.HK 1024.HK",
+  tech: "NVDA.US AAPL.US MSFT.US AMZN.US GOOGL.US META.US TSLA.US AVGO.US AMD.US PLTR.US ORCL.US ADBE.US CRM.US NOW.US AMAT.US LRCX.US KLAC.US MU.US INTC.US QCOM.US",
+};
+
+function loadPreset(key) {
+  document.getElementById('symbolsInput').value = PRESETS[key];
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let allResults = [];
+let sortKey = 'score';
+let sortDir = -1;  // -1 = desc
+
+// ── Market status ──────────────────────────────────────────────────────────
+async function loadMarket() {
+  const bm = document.getElementById('benchmark').value.trim() || 'SPY.US';
+  try {
+    const r = await fetch(`/api/market?benchmark=${encodeURIComponent(bm)}`);
+    const d = await r.json();
+    const cls = { NORMAL: 'badge-normal', CAUTION: 'badge-caution',
+                  FROZEN: 'badge-frozen', UNKNOWN: 'badge-unknown' }[d.status] || 'badge-unknown';
+    const price = d.price ? ` $${d.price.toFixed(2)}` : '';
+    document.getElementById('marketBadge').innerHTML =
+      `<span class="decision-badge ${cls} border-2 border-black">${d.benchmark}${price} — ${d.status}</span>`;
+  } catch(e) {
+    document.getElementById('marketBadge').innerHTML =
+      '<span class="mono text-sm text-red-600">市場狀態讀取失敗（Flask 未啟動？）</span>';
+  }
+}
+loadMarket();
+
+// ── Scan ───────────────────────────────────────────────────────────────────
+async function startScan() {
+  const btn  = document.getElementById('scanBtn');
+  const stat = document.getElementById('scanStatus');
+  btn.disabled = true;
+  btn.textContent = '掃描中...';
+  stat.innerHTML = '<span class="spinner"></span> 緊係要等，數據緊緊拉...';
+
+  const rawSyms = document.getElementById('symbolsInput').value.trim();
+  const symbols  = rawSyms ? rawSyms.split(/[\s,]+/).filter(Boolean) : [];
+  const body = {
+    symbols:       symbols.length ? symbols : undefined,
+    benchmark:     document.getElementById('benchmark').value.trim() || 'SPY.US',
+    account_size:  parseFloat(document.getElementById('accountSize').value) || 100000,
+    risk_per_trade: parseFloat(document.getElementById('riskPct').value) / 100 || 0.005,
+  };
+
+  try {
+    const t0 = Date.now();
+    const resp = await fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const elapsed = ((Date.now() - t0)/1000).toFixed(1);
+
+    allResults = data.results;
+    renderTable();
+    renderSummary(data.results, data.market_status, elapsed);
+    await loadMarket();
+    toast('掃描完成！');
+  } catch(e) {
+    stat.textContent = '錯誤: ' + e.message;
+    toast('掃描失敗: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ 開始掃描';
+    stat.textContent = '';
+  }
+}
+
+// ── Render summary ─────────────────────────────────────────────────────────
+function renderSummary(results, mstatus, elapsed) {
+  const buy   = results.filter(r => r.decision === 'BUY_CANDIDATE').length;
+  const watch = results.filter(r => r.decision === 'WATCH').length;
+  const skip  = results.filter(r => r.decision === 'SKIP').length;
+  const rules = results.filter(r => r.buy_rules_match).length;
+  document.getElementById('sumTime').textContent  = elapsed + 's';
+  document.getElementById('sumBuy').textContent   = buy;
+  document.getElementById('sumWatch').textContent = watch;
+  document.getElementById('sumSkip').textContent  = skip;
+  document.getElementById('sumBuyRules').textContent = rules;
+  document.getElementById('summaryBar').classList.remove('hidden');
+}
+
+// ── Sort ───────────────────────────────────────────────────────────────────
+function sortBy(key) {
+  if (sortKey === key) { sortDir = -sortDir; }
+  else { sortKey = key; sortDir = -1; }
+  renderTable();
+}
+
+function getVal(r, k) {
+  if (k === 'decision') { const m = {BUY_CANDIDATE:3,WATCH:2,SKIP:1}; return m[r.decision]||0; }
+  return r[k] ?? -999;
+}
+
+// ── Render table ───────────────────────────────────────────────────────────
+function renderTable() {
+  const filter  = document.getElementById('filterDecision').value;
+  const rows    = allResults.filter(r => filter === 'ALL' || r.decision === filter);
+  const sorted  = [...rows].sort((a,b) => sortDir * (getVal(a,sortKey) - getVal(b,sortKey)));
+
+  // Update sort indicators
+  document.querySelectorAll('th').forEach(th => {
+    th.classList.remove('sorted-asc','sorted-desc');
+    if (th.textContent.replace(/ [↑↓]/,'') === thLabel(sortKey)) {
+      th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+    }
+  });
+
+  const tbody = document.getElementById('resultsBody');
+  tbody.innerHTML = '';
+
+  document.getElementById('resultsPanel').style.display = sorted.length ? 'block' : 'none';
+  document.getElementById('emptyMsg').classList.toggle('hidden', sorted.length > 0);
+
+  sorted.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => openDetail(r);
+
+    const decCls = { BUY_CANDIDATE:'badge-buy', WATCH:'badge-watch', SKIP:'badge-skip' }[r.decision]||'badge-skip';
+    const star   = r.buy_rules_match ? '<span class="star">★</span> ' : '';
+    const rk     = r.rs_rank ? `#${r.rs_rank}/${r.rs_rank_total}` : '—';
+    const tags   = buildTags(r.tags);
+    const scoreColor = r.score >= 80 ? '#059669' : r.score >= 65 ? '#d97706' : r.score >= 45 ? '#2563eb' : '#71717a';
+    const dist52 = r.distance_52h != null ? `${r.distance_52h}%` : '—';
+    const stopp  = r.stop_pct   != null ? `${r.stop_pct}%` : '—';
+    const close  = r.close      != null ? `$${r.close.toFixed(2)}` : '—';
+    const shs    = r.shares     != null ? r.shares : '—';
+    const src    = r.source === 'Longbridge' ?
+      '<span class="tag tag-buy">長橋</span>' :
+      '<span class="tag tag-skip">yfinance</span>';
+
+    tr.innerHTML = `
+      <td class="font-bold">${star}${r.symbol}</td>
+      <td><span class="decision-badge ${decCls}">${r.decision}</span></td>
+      <td>
+        <div class="flex items-center gap-2">
+          <span style="color:${scoreColor};font-weight:700">${r.score}</span>
+          <div class="score-bar-bg" style="width:60px">
+            <div class="score-bar" style="width:${r.score}%;background:${scoreColor}"></div>
+          </div>
+        </div>
+      </td>
+      <td>${rk}</td>
+      <td>${close}</td>
+      <td style="color:${r.distance_52h >= -5 ? '#059669' : r.distance_52h >= -15 ? '#d97706' : '#dc2626'}">${dist52}</td>
+      <td style="color:${r.stop_pct <= 8 ? '#059669' : r.stop_pct <= 12 ? '#d97706' : '#dc2626'}">${stopp}</td>
+      <td>${shs}</td>
+      <td style="max-width:260px;white-space:normal">${tags}</td>
+      <td>${src}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function thLabel(k) {
+  const m = { symbol:'代碼', decision:'決策', score:'分數', rs_rank:'RS排名',
+              close:'收市價', distance_52h:'距52高', stop_pct:'止損%', shares:'建議股數' };
+  return m[k] || k;
+}
+
+// ── Tags ───────────────────────────────────────────────────────────────────
+const TAG_STYLE = {
+  buy_rules_match:    'tag-buy',
+  stage2:             'tag-buy',
+  ma_stack:           'tag-buy',
+  rs_leader:          'tag-buy',
+  breakout:           'tag-buy',
+  pullback:           'tag-buy',
+  volume_confirmed:   'tag-info',
+  bullish_candle:     'tag-info',
+  vcp_like:           'tag-purple',
+  distribution_warning: 'tag-warn',
+  earnings_window:    'tag-warn',
+  market_frozen:      'tag-warn',
+  market_caution:     'tag-warn',
+  unprofitable:       'tag-warn',
+  position_cap:       'tag-watch',
+  insufficient_data:  'tag-skip',
+};
+
+const TAG_LABEL = {
+  buy_rules_match: '✓ 買入規則',
+  stage2: 'S2',
+  ma_stack: 'MA排列',
+  rs_leader: 'RS強',
+  breakout: '突破',
+  pullback: '拉回',
+  volume_confirmed: '量確認',
+  bullish_candle: '陽燭',
+  vcp_like: 'VCP型',
+  distribution_warning: '⚠ 派貨',
+  earnings_window: '⚠ 業績期',
+  market_frozen: '⛔ 市凍',
+  market_caution: '⚠ 市警',
+  unprofitable: '⚠ 虧損',
+  position_cap: '10%上限',
+  insufficient_data: '數據不足',
+};
+
+function buildTags(tags) {
+  return tags.filter(t => t !== 'stage2' || true).map(t => {
+    const cls = TAG_STYLE[t] || 'tag-skip';
+    const lbl = TAG_LABEL[t] || t;
+    return `<span class="tag ${cls}">${lbl}</span>`;
+  }).join('');
+}
+
+// ── Detail ─────────────────────────────────────────────────────────────────
+function openDetail(r) {
+  const box = document.getElementById('detailBox');
+  const rk  = r.rs_rank ? `#${r.rs_rank} / ${r.rs_rank_total}` : '—';
+  const decCls = { BUY_CANDIDATE:'badge-buy', WATCH:'badge-watch', SKIP:'badge-skip' }[r.decision]||'badge-skip';
+
+  const bdHtml = (r.score_breakdown || []).map(([label, pts]) => {
+    const col = pts > 0 ? '#059669' : '#dc2626';
+    const w   = Math.abs(pts) / 25 * 100;
+    return `<div class="progress-row">
+      <span class="progress-label">${label}</span>
+      <div class="score-bar-bg flex-1"><div class="score-bar" style="width:${w}%;background:${col}"></div></div>
+      <span class="progress-val" style="color:${col}">${pts > 0 ? '+' : ''}${pts}</span>
+    </div>`;
+  }).join('');
+
+  const maRow = (label, val, ref) => {
+    const color = val && ref && val > ref ? '#059669' : '#dc2626';
+    return `<tr><td class="py-1 pr-4 text-zinc-500">${label}</td><td style="color:${color}">${val ? '$'+val.toFixed(2) : '—'}</td></tr>`;
+  };
+
+  box.innerHTML = `
+    <div class="flex items-start justify-between mb-4">
+      <div>
+        <h2 class="mono text-xl font-bold">${r.buy_rules_match ? '★ ' : ''}${r.symbol}</h2>
+        <span class="decision-badge ${decCls} mt-1 inline-block">${r.decision}</span>
+        ${r.buy_rules_match ? '<span class="tag tag-buy ml-2">✓ 符合買入規則</span>' : ''}
+      </div>
+      <button onclick="closeDetail()" class="mono text-xl font-bold px-2 hover:bg-zinc-100">✕</button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-5">
+      <div class="border border-zinc-200 p-3">
+        <div class="text-xs text-zinc-500 mono mb-2">價格 & 均線</div>
+        <table>
+          <tr><td class="py-1 pr-4 text-zinc-500">收市</td><td class="font-bold">${r.close ? '$'+r.close.toFixed(2) : '—'}</td></tr>
+          ${maRow('10W', r.ma10, r.close)}
+          ${maRow('20W', r.ma20, r.close)}
+          ${maRow('50W', r.ma50, r.close)}
+          ${maRow('200W', r.ma200, r.close)}
+          <tr><td class="py-1 pr-4 text-zinc-500">距52高</td>
+              <td style="color:${r.distance_52h >= -15 ? '#059669' : '#dc2626'}">${r.distance_52h != null ? r.distance_52h+'%' : '—'}</td></tr>
+        </table>
+      </div>
+      <div class="border border-zinc-200 p-3">
+        <div class="text-xs text-zinc-500 mono mb-2">風控 & MRA</div>
+        <table>
+          <tr><td class="py-1 pr-4 text-zinc-500">止損位</td><td>${r.stop ? '$'+r.stop.toFixed(2) : '—'}</td></tr>
+          <tr><td class="py-1 pr-4 text-zinc-500">止損%</td>
+              <td style="color:${r.stop_pct <= 12 ? '#059669' : '#dc2626'}">${r.stop_pct != null ? r.stop_pct+'%' : '—'}</td></tr>
+          <tr><td class="py-1 pr-4 text-zinc-500">建議股數</td><td class="font-bold">${r.shares ?? '—'}</td></tr>
+          <tr><td class="py-1 pr-4 text-zinc-500">RS排名</td><td>${rk}</td></tr>
+          <tr><td class="py-1 pr-4 text-zinc-500">RS分</td><td>${r.rs_score != null ? r.rs_score+'%' : '—'}</td></tr>
+          <tr><td class="py-1 pr-4 text-zinc-500">成交量比</td><td>${r.vol_ratio != null ? r.vol_ratio.toFixed(2)+'x' : '—'}</td></tr>
+          ${r.fundamental?.pe ? `<tr><td class="py-1 pr-4 text-zinc-500">PE</td><td>${r.fundamental.pe}</td></tr>` : ''}
+        </table>
+      </div>
+    </div>
+
+    <div class="border border-zinc-200 p-3 mb-4">
+      <div class="text-xs text-zinc-500 mono mb-3">分數拆解 (總分 ${r.score}/100)</div>
+      ${bdHtml || '<p class="text-zinc-400 text-sm">無數據</p>'}
+    </div>
+
+    <div class="mb-4">
+      <div class="text-xs text-zinc-500 mono mb-2">標籤</div>
+      ${buildTags(r.tags)}
+    </div>
+
+    <div class="text-xs text-zinc-400 mono">數據源: ${r.source} · ${r.error || '正常'}</div>
+  `;
+
+  document.getElementById('detailOverlay').style.display = 'flex';
+}
+
+function closeDetail(e) {
+  if (!e || e.target === document.getElementById('detailOverlay')) {
+    document.getElementById('detailOverlay').style.display = 'none';
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function toast(msg, err = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = err ? '#dc2626' : '#18181b';
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+// filter change
+document.getElementById('filterDecision').addEventListener('change', renderTable);
+</script>
+</body>
+</html>
