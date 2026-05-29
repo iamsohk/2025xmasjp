@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 蘇蘇全自動投資助理 (Soso Trader Commander)
-版本：v4.8LB (長橋 MCP/CLI 整合版)
+版本：v4.9LB (長橋 MCP/CLI 整合版)
 功能：大市共振 + 板塊輪動 + 動能雷達 + 持倉檢查 + Sniper/VCP/Panic 嚴選 + BTC
 數據：優先長橋 CLI，後備 Yahoo Finance
 """
@@ -40,10 +40,10 @@ SP100 = [
     "UNP","UPS","USB","V","VZ","WFC","WMT","XOM"
 ]
 
-UNIVERSE = list(set(SP100 + MY_HOLDINGS + MY_PICKS))
+UNIVERSE = list(set(SP100 + MY_PICKS) - set(MY_HOLDINGS))
 
 MIN_WINRATE = 60
-MIN_COUNT   = 3
+MIN_COUNT   = 30
 HOLD_DAYS   = 20
 STOP_PCT    = 0.10
 
@@ -170,7 +170,7 @@ def calc_indicators(df):
     return df
 
 def honest_backtest(df, entry_indices, hold_days=20, stop_pct=0.10):
-    wins = 0; total = 0
+    wins = 0; total = 0; win_rs = []; loss_rs = []
     c = df["Close"].values
     l = df["Low"].values
     n = len(c)
@@ -180,12 +180,24 @@ def honest_backtest(df, entry_indices, hold_days=20, stop_pct=0.10):
         entry = float(c[idx])
         stop  = entry * (1 - stop_pct)
         if np.min(l[idx+1:idx+hold_days+1]) < stop:
+            loss_rs.append(-stop_pct)
             total += 1
             continue
-        if float(c[idx+hold_days]) > entry:
+        r = (float(c[idx+hold_days]) - entry) / entry
+        if r > 0:
             wins += 1
+            win_rs.append(r)
+        else:
+            loss_rs.append(r)
         total += 1
-    return (wins / total * 100 if total > 0 else 0), total
+    if total == 0:
+        return 0, 0, 0, 0
+    wr       = wins / total
+    avg_win  = float(np.mean(win_rs))        if win_rs  else 0.0
+    avg_loss = float(abs(np.mean(loss_rs)))  if loss_rs else 0.0
+    payoff   = round(avg_win / avg_loss, 2)  if avg_loss > 0 else 0.0
+    expectancy = round((wr * avg_win - (1 - wr) * avg_loss) * 100, 2)
+    return round(wr * 100, 1), total, expectancy, payoff
 
 # ==========================================
 # 4) 模組
@@ -212,9 +224,9 @@ def check_market_resonance():
     if q_p < q_ma200:
         return "🔴 熊市 (Risk Off)", f"QQQ跌穿年線，現金為王 (VIX:{v_p:.2f})", False, v_p
 
-    score = sum([q_p > q_ma50, s_p > s_ma50, v_p < 25])
-    if score == 3: return "🟢 全面 Risk On", f"趨勢強勁 (VIX:{v_p:.2f})", True, v_p
-    elif score == 2: return "🟡 震盪 (Neutral)", f"分歧市況 (VIX:{v_p:.2f})", True, v_p
+    score = sum([q_p > q_ma50, s_p > s_ma50])
+    if score == 2: return "🟢 全面 Risk On", f"趨勢強勁 (VIX:{v_p:.2f})", True, v_p
+    elif score == 1: return "🟡 震盪 (Neutral)", f"分歧市況 (VIX:{v_p:.2f})", True, v_p
     else: return "🔴 轉弱 (Warning)", f"動能減弱 (VIX:{v_p:.2f})", False, v_p
 
 def check_sectors():
@@ -232,7 +244,7 @@ def check_sectors():
 
     df_sec = pd.DataFrame(sector_perf).sort_values("Perf", ascending=False)
     top_str  = ", ".join([r["Name"] for _, r in df_sec.head(3).iterrows()])
-    weak_str = df_sec.tail(1).iloc[0]["Name"]
+    weak_str = ", ".join([r["Name"] for _, r in df_sec.tail(3).iterrows()])
     return top_str, weak_str
 
 def check_momentum():
@@ -287,7 +299,7 @@ def check_holdings():
     return pd.DataFrame(report, columns=["Ticker","Status","Price","Action"]), discipline_msg, can_buy
 
 def run_scan():
-    print(f"🚀 啟動三重策略掃描 (Win>={MIN_WINRATE}% & Count>={MIN_COUNT})...")
+    print(f"🚀 啟動三重策略掃描 (Win>={MIN_WINRATE}% & Count>={MIN_COUNT} & Exp>0 & Payoff>=1.5)...")
     sniper_list, vcp_list, panic_list = [], [], []
 
     for t in UNIVERSE:
@@ -313,18 +325,18 @@ def run_scan():
         if trend_strong:
             sigs = [i for i in range(50, len(df)-HOLD_DAYS)
                     if c.iloc[i] > ma20.iloc[i] and c.iloc[i-1] <= ma20.iloc[i-1]]
-            wr, cnt = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-            if wr >= MIN_WINRATE and cnt >= MIN_COUNT:
-                sniper_list.append({"Ticker":t,"Price":p,"WinRate":round(wr,1),"Count":cnt,"Setup":"Sniper MA20","Stop":round(p-2*atr,2)})
+            wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
+            if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
+                sniper_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"Sniper MA20","Stop":round(p-2*atr,2)})
 
         # VCP
         vcp_pos = (p > float(df["Low250"].iloc[-1]) * 1.3) and (p > float(df["High250"].iloc[-1]) * 0.75)
         if trend_strong and vcp_pos:
             sigs = [i for i in range(60, len(df)-HOLD_DAYS)
                     if df["STD10"].iloc[i] < df["STD50"].iloc[i]*0.6 and df["VolMA5"].iloc[i] < df["VolMA50"].iloc[i]]
-            wr, cnt = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-            if wr >= MIN_WINRATE and cnt >= MIN_COUNT:
-                vcp_list.append({"Ticker":t,"Price":p,"WinRate":round(wr,1),"Count":cnt,"Setup":"VCP 爆發","Stop":round(p-2*atr,2)})
+            wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
+            if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
+                vcp_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"VCP 爆發","Stop":round(p-2*atr,2)})
 
         # ATR Panic
         sigs = []
@@ -335,9 +347,9 @@ def run_scan():
                 continue
             if prev_range > prev_atr*2 and float(c.iloc[i]) > float(df["High"].iloc[i-1]):
                 sigs.append(i)
-        wr, cnt = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-        if wr >= MIN_WINRATE and cnt >= MIN_COUNT:
-            panic_list.append({"Ticker":t,"Price":p,"WinRate":round(wr,1),"Count":cnt,"Setup":"ATR Panic","Stop":round(float(df["Low"].iloc[-1]),2)})
+        wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
+        if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
+            panic_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"ATR Panic","Stop":round(float(df["Low"].iloc[-1]),2)})
 
     return pd.DataFrame(sniper_list), pd.DataFrame(vcp_list), pd.DataFrame(panic_list)
 
@@ -361,7 +373,7 @@ def check_btc():
 # ==========================================
 def main():
     print("\n" + "="*58)
-    print(f"🫡 蘇蘇指揮官報告 v4.8LB | {dt.date.today()}")
+    print(f"🫡 蘇蘇指揮官報告 v4.9LB | {dt.date.today()}")
     if lb_available():
         print("   📡 數據源：長橋 CLI ✅ (已登入)")
     else:
@@ -397,8 +409,8 @@ def main():
             if df is None or df.empty:
                 print("   (無符合條件)")
                 return
-            df = df.sort_values(["WinRate","Count"], ascending=[False,False]).head(3)
-            print(df[["Ticker","Price","WinRate","Count","Stop"]].to_string(index=False))
+            df = df.sort_values(["Exp%","WinRate","Count"], ascending=[False,False,False]).head(3)
+            print(df[["Ticker","Price","WinRate","Count","Exp%","Payoff","Stop"]].to_string(index=False))
 
         show(df_s, "🛡️【Sniper 狙擊】(誠實回測通過)")
         show(df_v, "⚔️【VCP 爆發】(誠實回測通過)")
