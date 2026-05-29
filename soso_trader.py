@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 蘇蘇全自動投資助理 (Soso Trader Commander)
-版本：v4.9LB (長橋 MCP/CLI 整合版)
+版本：v5.0LB (誠實回測引擎版)
 功能：大市共振 + 板塊輪動 + 動能雷達 + 持倉檢查 + Sniper/VCP/Panic 嚴選 + BTC
 數據：優先長橋 CLI，後備 Yahoo Finance
+回測：permutation 顯著性檢定 + FDR 多重比較校正（見 backtest_engine.py）
+      經 validate_engine.py 驗證：純噪音 FDR 後通過率 ≈ 0%，真實 edge > 78%
 """
 
 import yfinance as yf
@@ -14,6 +16,7 @@ import warnings
 import subprocess
 import json
 import sys
+import backtest_engine as be
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -42,10 +45,12 @@ SP100 = [
 
 UNIVERSE = list(set(SP100 + MY_PICKS) - set(MY_HOLDINGS))
 
-MIN_WINRATE = 60
-MIN_COUNT   = 30
 HOLD_DAYS   = 20
 STOP_PCT    = 0.10
+MIN_COUNT   = 8       # 回測最少訊號數（太少冇統計意義）
+SCAN_NPERM  = 400     # permutation 次數（決定 p-value 精度下限 ≈ 1/(N+1)）
+FDR_ALPHA   = 0.10    # Benjamini-Hochberg 多重比較 FDR 水平
+FRESH_BARS  = 2       # 訊號需喺最近 N 根 K 線出現先算「而家可入場」
 
 # ==========================================
 # 2) 長橋 CLI 數據層
@@ -169,35 +174,11 @@ def calc_indicators(df):
     df["VolMA50"] = df["Volume"].rolling(50).mean()
     return df
 
-def honest_backtest(df, entry_indices, hold_days=20, stop_pct=0.10):
-    wins = 0; total = 0; win_rs = []; loss_rs = []
-    c = df["Close"].values
-    l = df["Low"].values
-    n = len(c)
-    for idx in entry_indices:
-        if idx + hold_days >= n:
-            continue
-        entry = float(c[idx])
-        stop  = entry * (1 - stop_pct)
-        if np.min(l[idx+1:idx+hold_days+1]) < stop:
-            loss_rs.append(-stop_pct)
-            total += 1
-            continue
-        r = (float(c[idx+hold_days]) - entry) / entry
-        if r > 0:
-            wins += 1
-            win_rs.append(r)
-        else:
-            loss_rs.append(r)
-        total += 1
-    if total == 0:
-        return 0, 0, 0, 0
-    wr       = wins / total
-    avg_win  = float(np.mean(win_rs))        if win_rs  else 0.0
-    avg_loss = float(abs(np.mean(loss_rs)))  if loss_rs else 0.0
-    payoff   = round(avg_win / avg_loss, 2)  if avg_loss > 0 else 0.0
-    expectancy = round((wr * avg_win - (1 - wr) * avg_loss) * 100, 2)
-    return round(wr * 100, 1), total, expectancy, payoff
+# 回測 / 顯著性檢定已搬入 backtest_engine.py（誠實回測引擎 v3）：
+#   • 逐根 K 線 trend gate（修正 backtest/live 對齊）
+#   • permutation test 計 p-value（真實時序 vs 打散時序）
+#   • Benjamini-Hochberg FDR 校正多重比較
+# 經 validate_engine.py 驗證：純噪音 FDR 後通過率 ≈ 0%，真實 edge > 78%。
 
 # ==========================================
 # 4) 模組
@@ -298,60 +279,69 @@ def check_holdings():
 
     return pd.DataFrame(report, columns=["Ticker","Status","Price","Action"]), discipline_msg, can_buy
 
+def _ohlcv(df):
+    """由 DataFrame 抽 numpy OHLCV；缺欄位用收市價/1 補上。"""
+    c = df["Close"].astype(float).values
+    h = df["High"].astype(float).values  if "High"   in df.columns else c.copy()
+    l = df["Low"].astype(float).values   if "Low"    in df.columns else c.copy()
+    o = df["Open"].astype(float).values  if "Open"   in df.columns else c.copy()
+    v = df["Volume"].astype(float).values if "Volume" in df.columns else np.ones_like(c)
+    return o, h, l, c, v
+
+
 def run_scan():
-    print(f"🚀 啟動三重策略掃描 (Win>={MIN_WINRATE}% & Count>={MIN_COUNT} & Exp>0 & Payoff>=1.5)...")
-    sniper_list, vcp_list, panic_list = [], [], []
+    """
+    嚴選掃描：誠實回測 + permutation 顯著性 + FDR 多重比較校正。
+    只考慮「而家可入場」（訊號喺最近 FRESH_BARS 根 K 線出現）嘅 setup，
+    對佢哋嘅歷史 edge 做 permutation test，最後喺整個候選家族做 FDR 校正。
+    回傳：候選 list、掃描組合數、FDR 顯著數。
+    """
+    print("🚀 嚴選掃描中：誠實回測 + permutation 顯著性 + FDR 校正"
+          f"（n_perm={SCAN_NPERM}, FDR={FDR_ALPHA}）...")
+    candidates = []
+    n_combos = 0
 
     for t in UNIVERSE:
         df = get_data(t, "3y")
-        if df is None or len(df) < 250:
+        if df is None or len(df) < 280:
             continue
-        df = calc_indicators(df)
-
-        c     = df["Close"]
-        p     = float(c.iloc[-1])
-        atr   = float(df["ATR"].iloc[-1])
-        ma20  = df["MA20"]
-        ma50  = df["MA50"]
-        ma150 = df["MA150"]
-        ma200 = df["MA200"]
-
-        if any(np.isnan([ma20.iloc[-1], ma50.iloc[-1], ma150.iloc[-1], ma200.iloc[-1], atr])):
+        o, h, l, c, v = _ohlcv(df)
+        if np.isnan(c[-1]):
+            continue
+        ind = be.compute_indicators(o, h, l, c, v)
+        trend = be.trend_gate(ind)
+        n = len(c)
+        price = float(c[-1])
+        atr = float(ind["atr"][-1])
+        if np.isnan(atr) or atr <= 0:
             continue
 
-        trend_strong = (p > ma50.iloc[-1]) and (ma50.iloc[-1] > ma150.iloc[-1]) and (ma150.iloc[-1] > ma200.iloc[-1])
-
-        # Sniper
-        if trend_strong:
-            sigs = [i for i in range(50, len(df)-HOLD_DAYS)
-                    if c.iloc[i] > ma20.iloc[i] and c.iloc[i-1] <= ma20.iloc[i-1]]
-            wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-            if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
-                sniper_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"Sniper MA20","Stop":round(p-2*atr,2)})
-
-        # VCP
-        vcp_pos = (p > float(df["Low250"].iloc[-1]) * 1.3) and (p > float(df["High250"].iloc[-1]) * 0.75)
-        if trend_strong and vcp_pos:
-            sigs = [i for i in range(60, len(df)-HOLD_DAYS)
-                    if df["STD10"].iloc[i] < df["STD50"].iloc[i]*0.6 and df["VolMA5"].iloc[i] < df["VolMA50"].iloc[i]]
-            wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-            if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
-                vcp_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"VCP 爆發","Stop":round(p-2*atr,2)})
-
-        # ATR Panic
-        sigs = []
-        for i in range(30, len(df)-HOLD_DAYS):
-            prev_range = float(df["High"].iloc[i-1] - df["Low"].iloc[i-1])
-            prev_atr   = float(df["ATR"].iloc[i-1])
-            if prev_atr <= 0 or np.isnan(prev_atr):
+        for name, fn in be.SIGNALS.items():
+            n_combos += 1
+            # 而家可入場？訊號喺最近 FRESH_BARS 根 K 線出現
+            sigs_now = fn(ind, trend, max(200, 50), n)
+            if not any(s >= n - FRESH_BARS for s in sigs_now):
                 continue
-            if prev_range > prev_atr*2 and float(c.iloc[i]) > float(df["High"].iloc[i-1]):
-                sigs.append(i)
-        wr, cnt, exp, payoff = honest_backtest(df, sigs, HOLD_DAYS, STOP_PCT)
-        if wr >= MIN_WINRATE and cnt >= MIN_COUNT and exp > 0 and payoff >= 1.5:
-            panic_list.append({"Ticker":t,"Price":p,"WinRate":wr,"Count":cnt,"Exp%":exp,"Payoff":payoff,"Setup":"ATR Panic","Stop":round(float(df["Low"].iloc[-1]),2)})
+            res = be.evaluate(o, h, l, c, v, fn,
+                              hold=HOLD_DAYS, stop_pct=STOP_PCT,
+                              min_count=MIN_COUNT, n_perm=SCAN_NPERM, seed=42)
+            if res is None or not res["passed_raw"]:
+                continue
+            stop = round(float(ind["low"][-1]), 2) if name == "ATR Panic" \
+                else round(price - 2 * atr, 2)
+            candidates.append({
+                "Ticker": t, "Setup": name, "Price": round(price, 2),
+                "Win": res["win"], "Count": res["count"], "Exp%": res["exp"],
+                "Payoff": res["payoff"], "p": res["p_value"], "Stop": stop,
+            })
 
-    return pd.DataFrame(sniper_list), pd.DataFrame(vcp_list), pd.DataFrame(panic_list)
+    sig_n = 0
+    if candidates:
+        mask = be.bh_fdr(np.array([d["p"] for d in candidates]), FDR_ALPHA)
+        for d, m in zip(candidates, mask):
+            d["顯著"] = "✅" if m else "—"
+        sig_n = int(mask.sum())
+    return candidates, n_combos, sig_n
 
 def check_btc():
     print("🪙 檢查 Crypto...")
@@ -373,7 +363,7 @@ def check_btc():
 # ==========================================
 def main():
     print("\n" + "="*58)
-    print(f"🫡 蘇蘇指揮官報告 v4.9LB | {dt.date.today()}")
+    print(f"🫡 蘇蘇指揮官報告 v5.0LB | {dt.date.today()}")
     if lb_available():
         print("   📡 數據源：長橋 CLI ✅ (已登入)")
     else:
@@ -402,19 +392,27 @@ def main():
         if not allow_buy:
             print("\n👀 提示：持倉已滿，以下只供「眼看手勿動」(Window Shopping)。")
 
-        df_s, df_v, df_p = run_scan()
+        cands, n_combos, sig_n = run_scan()
+        print(f"\n🔬 掃描統計：{n_combos} 個(股票×策略)組合 → "
+              f"{len(cands)} 個過預過濾 → {sig_n} 個經 FDR 統計顯著。")
 
-        def show(df, title):
-            print(f"\n{title}")
-            if df is None or df.empty:
-                print("   (無符合條件)")
-                return
-            df = df.sort_values(["Exp%","WinRate","Count"], ascending=[False,False,False]).head(3)
-            print(df[["Ticker","Price","WinRate","Count","Exp%","Payoff","Stop"]].to_string(index=False))
-
-        show(df_s, "🛡️【Sniper 狙擊】(誠實回測通過)")
-        show(df_v, "⚔️【VCP 爆發】(誠實回測通過)")
-        show(df_p, "⚡【ATR Panic】(誠實回測通過)")
+        if not cands:
+            print("   (冇 setup 通過預過濾)")
+        else:
+            dfc = pd.DataFrame(cands).sort_values("p", ascending=True)
+            sigdf = dfc[dfc["顯著"] == "✅"]
+            rawdf = dfc[dfc["顯著"] == "—"]
+            cols = ["Ticker","Setup","Price","Win","Count","Exp%","Payoff","p","Stop"]
+            if not sigdf.empty:
+                print("\n🎯【統計顯著・跑贏運氣】(permutation + FDR 通過，可信度最高)")
+                print(sigdf[cols].to_string(index=False))
+            else:
+                print("\n🟡 今日冇任何 setup 通過統計顯著校正。")
+                print("   意思：呢啲 setup 嘅歷史表現，分唔清係實力定運氣。")
+                print("   建議：觀望 / 保留現金。空結果係誠實，唔係 bug。")
+            if not rawdf.empty:
+                print("\n📋 (只過預過濾、未達統計顯著 —— 僅參考，唔建議行動)")
+                print(rawdf[["Ticker","Setup","Price","Exp%","Payoff","p"]].head(8).to_string(index=False))
     else:
         print("\n🛑 掃描暫停：大市風險高 (紅燈)，保留現金。")
 
