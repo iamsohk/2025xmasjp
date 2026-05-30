@@ -52,6 +52,44 @@ SCAN_NPERM  = 400     # permutation 次數（決定 p-value 精度下限 ≈ 1/(
 FDR_ALPHA   = 0.10    # Benjamini-Hochberg 多重比較 FDR 水平
 FRESH_BARS  = 2       # 訊號需喺最近 N 根 K 線出現先算「而家可入場」
 
+# ---- 注碼 / 曝險規則（J Law 風控：用條數鎖死衝動嘅手）----
+CAPITAL        = 100000  # 組合總資金（USD），喺 Colab 設定格改成你自己嘅
+RISK_PCT       = 0.01    # 每注最多蝕組合 1%（J Law 0.3%~1% 精神，唔靠感覺）
+MAX_POS_PCT    = 0.20    # 單一注碼成本上限：唔超過組合 20%
+MAX_SECTOR_PCT = 0.40    # 單一板塊持倉數量上限：唔超過 40%
+
+# 股票→板塊對照（曝險集中度檢查用；查唔到當「其他」）
+TICKER_SECTOR = {
+    # 科技
+    "AAPL":"科技","ACN":"科技","ADBE":"科技","AMD":"科技","AMAT":"科技","CRM":"科技",
+    "CSCO":"科技","IBM":"科技","INTC":"科技","MSFT":"科技","MU":"科技","MRVL":"科技",
+    "NVDA":"科技","ORCL":"科技","PLTR":"科技","QCOM":"科技","TXN":"科技","TYL":"科技","FIG":"科技",
+    # 通訊
+    "CHTR":"通訊","CMCSA":"通訊","DIS":"通訊","GOOG":"通訊","GOOGL":"通訊","META":"通訊",
+    "NFLX":"通訊","T":"通訊","TMUS":"通訊","VZ":"通訊",
+    # 非必需消費
+    "AMZN":"非必需消費","BKNG":"非必需消費","F":"非必需消費","GM":"非必需消費","HD":"非必需消費",
+    "LOW":"非必需消費","MCD":"非必需消費","NKE":"非必需消費","SBUX":"非必需消費","TGT":"非必需消費","TSLA":"非必需消費",
+    # 必需消費
+    "CL":"必需消費","COST":"必需消費","KHC":"必需消費","KO":"必需消費","MDLZ":"必需消費",
+    "MO":"必需消費","PEP":"必需消費","PG":"必需消費","PM":"必需消費","WMT":"必需消費",
+    # 金融
+    "AIG":"金融","AXP":"金融","BAC":"金融","BK":"金融","BLK":"金融","BRK-B":"金融","C":"金融",
+    "COF":"金融","GS":"金融","JPM":"金融","MA":"金融","MET":"金融","MS":"金融","PYPL":"金融",
+    "SCHW":"金融","USB":"金融","V":"金融","WFC":"金融","FUTU":"金融",
+    # 醫療
+    "ABBV":"醫療","ABT":"醫療","AMGN":"醫療","BMY":"醫療","CVS":"醫療","DHR":"醫療","GILD":"醫療",
+    "JNJ":"醫療","LLY":"醫療","MDT":"醫療","MRK":"醫療","PFE":"醫療","TMO":"醫療","UNH":"醫療",
+    # 能源
+    "COP":"能源","CVX":"能源","XOM":"能源",
+    # 工業
+    "BA":"工業","CAT":"工業","DE":"工業","EMR":"工業","FDX":"工業","GD":"工業","GE":"工業",
+    "HON":"工業","LMT":"工業","MMM":"工業","RTX":"工業","UNP":"工業","UPS":"工業",
+    # 公用 / 原材料 / 地產 / ETF
+    "DUK":"公用","EXC":"公用","NEE":"公用","SO":"公用",
+    "DOW":"原材料","LIN":"原材料","AMT":"地產","SPG":"地產","VT":"ETF(全球分散)",
+}
+
 # ==========================================
 # 2) 長橋 CLI 數據層
 # ==========================================
@@ -279,6 +317,47 @@ def check_holdings():
 
     return pd.DataFrame(report, columns=["Ticker","Status","Price","Action"]), discipline_msg, can_buy
 
+# ==========================================
+# 4b) 風控：注碼計算 + 曝險檢查（用條數鎖死衝動）
+# ==========================================
+def position_size(capital, entry, stop, risk_pct=RISK_PCT, max_pos_pct=MAX_POS_PCT):
+    """
+    機械式注碼：每注最多蝕組合 risk_pct，且單注成本唔超過 max_pos_pct。
+    呢個唔係「靠感覺買幾多」，係一條數——情緒碰唔到佢。
+    回傳 (股數, 注碼成本, 實際最大虧損金額)。
+    """
+    risk_per_share = entry - stop
+    if entry <= 0 or risk_per_share <= 0:
+        return 0, 0.0, 0.0
+    shares = int((capital * risk_pct) / risk_per_share)   # 由風險倒推股數
+    if shares * entry > capital * max_pos_pct:            # 單注唔好過大
+        shares = int((capital * max_pos_pct) / entry)
+    cost = shares * entry
+    risk_dollar = shares * risk_per_share
+    return shares, round(cost, 2), round(risk_dollar, 2)
+
+
+def check_exposure(tickers):
+    """
+    組合層面板塊集中度檢查：超標就彈紅燈。
+    （只用持倉「隻數」算集中度，唔需要實際成本——但已足夠照出「全押科技」。）
+    回傳 (警告 list, 板塊分佈 dict)。
+    """
+    if not tickers:
+        return [], {}
+    sector_cnt = {}
+    for t in tickers:
+        sec = TICKER_SECTOR.get(t, "其他")
+        sector_cnt[sec] = sector_cnt.get(sec, 0) + 1
+    n = len(tickers)
+    warnings = []
+    for sec, cnt in sorted(sector_cnt.items(), key=lambda x: -x[1]):
+        pct = cnt / n
+        if pct > MAX_SECTOR_PCT and sec not in ("ETF(全球分散)",):
+            warnings.append(f"⚠️ {sec} 板塊佔 {cnt}/{n} 注 ({pct*100:.0f}%) — 超過 {MAX_SECTOR_PCT*100:.0f}% 上限，過度集中")
+    return warnings, sector_cnt
+
+
 def _ohlcv(df):
     """由 DataFrame 抽 numpy OHLCV；缺欄位用收市價/1 補上。"""
     c = df["Close"].astype(float).values
@@ -329,10 +408,12 @@ def run_scan():
                 continue
             stop = round(float(ind["low"][-1]), 2) if name == "ATR Panic" \
                 else round(price - 2 * atr, 2)
+            shares, cost, risk_d = position_size(CAPITAL, price, stop)
             candidates.append({
                 "Ticker": t, "Setup": name, "Price": round(price, 2),
                 "Win": res["win"], "Count": res["count"], "Exp%": res["exp"],
                 "Payoff": res["payoff"], "p": res["p_value"], "Stop": stop,
+                "Shares": shares, "Risk$": risk_d,
             })
 
     sig_n = 0
@@ -388,6 +469,18 @@ def main():
     if not df_h.empty:
         print(df_h.to_string(index=False, header=False))
 
+    # 組合曝險紅燈（板塊集中度）
+    exp_warn, sec_cnt = check_exposure(MY_HOLDINGS)
+    if sec_cnt:
+        breakdown = "、".join(f"{s} {c}" for s, c in
+                              sorted(sec_cnt.items(), key=lambda x: -x[1]))
+        print(f"\n🧭 板塊曝險：{breakdown}（資金 ${CAPITAL:,.0f}，每注風險 {RISK_PCT*100:.0f}%）")
+        if exp_warn:
+            for w in exp_warn:
+                print(f"   {w}")
+        else:
+            print("   ✅ 板塊分散正常，冇單一板塊超標。")
+
     if market_ok:
         if not allow_buy:
             print("\n👀 提示：持倉已滿，以下只供「眼看手勿動」(Window Shopping)。")
@@ -402,10 +495,11 @@ def main():
             dfc = pd.DataFrame(cands).sort_values("p", ascending=True)
             sigdf = dfc[dfc["顯著"] == "✅"]
             rawdf = dfc[dfc["顯著"] == "—"]
-            cols = ["Ticker","Setup","Price","Win","Count","Exp%","Payoff","p","Stop"]
+            cols = ["Ticker","Setup","Price","Win","Count","Exp%","Payoff","p","Stop","Shares","Risk$"]
             if not sigdf.empty:
                 print("\n🎯【統計顯著・跑贏運氣】(permutation + FDR 通過，可信度最高)")
                 print(sigdf[cols].to_string(index=False))
+                print(f"   💰 Shares/Risk$ 已按資金 ${CAPITAL:,.0f}、每注險 {RISK_PCT*100:.0f}% 機械計算。")
             else:
                 print("\n🟡 今日冇任何 setup 通過統計顯著校正。")
                 print("   意思：呢啲 setup 嘅歷史表現，分唔清係實力定運氣。")
@@ -413,6 +507,13 @@ def main():
             if not rawdf.empty:
                 print("\n📋 (只過預過濾、未達統計顯著 —— 僅參考，唔建議行動)")
                 print(rawdf[["Ticker","Setup","Price","Exp%","Payoff","p"]].head(8).to_string(index=False))
+
+            # 欄位說明（一句話記住）
+            print("\n📖 欄位速讀：")
+            print("   • Exp%   = 期望值，每入場一次長期平均賺幾多 %（已攤入蝕嗰幾次）。正數先值得，越高越好。")
+            print("   • Payoff = 盈虧比，贏一次賺嘅 ÷ 輸一次蝕嘅。>1.5 較理想；但要連 Exp% 一齊睇。")
+            print("   • p      = p-value，純運氣都做到呢成績嘅機會。越細越好；<0.05 +FDR(✅) 先算可信。")
+            print("   • Shares/Risk$ = 機械注碼：買幾多股、最壞蝕幾多錢（唔靠感覺，靠條數）。")
     else:
         print("\n🛑 掃描暫停：大市風險高 (紅燈)，保留現金。")
 
