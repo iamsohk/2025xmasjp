@@ -1,0 +1,12 @@
+year,hsbc_prime_P,hibor_1m_avg,hbor_mortgage_effective,p_mortgage_effective,cap_rate,note
+2015,5.00,0.23,2.05,2.15,2.15,low-rate-era
+2016,5.00,0.40,1.90,2.15,2.15,
+2017,5.00,0.55,1.85,2.15,2.35,H+1.3%_standard_from_2017
+2018,5.125,1.55,2.375,2.375,2.375,first_P_hike_Sep2018
+2019,5.00,1.95,2.50,2.50,2.50,P_cut_Q4_2019
+2020,5.00,0.85,2.00,2.50,2.50,covid_hibor_drop
+2021,5.00,0.13,1.50,2.50,2.50,trough
+2022,5.625,1.35,3.375,3.375,3.375,fed_hike_cycle;hibor_surge_H2
+2023,5.875,4.70,4.125,4.125,4.125,peak
+2024,5.25,4.40,3.625,3.625,3.625,P_cuts_from_Sep2024
+2025,5.00,2.00,2.625,3.00,3.50,hibor_collapse_mid2025
